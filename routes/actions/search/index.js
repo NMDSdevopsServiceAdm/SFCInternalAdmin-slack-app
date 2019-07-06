@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const config = require('../../../config/config');
 
+const isVerified = require('../../../utils/verifySignature').isVerified;
+
 const userData = [
   {
     uid: '74e520c5-6fd7-417a-8472-7e3e46da76b8',
@@ -40,6 +42,8 @@ const establishmentData = [
 
 router.route('/').post((req, res) => {
   // TODO - verifying 
+  // if (!isVerified(req)) return res.status(401).send();
+
   //console.log("[POST] actions/search - body: ", req.body);
 
   const VALID_COMMAND = '/asc-search';
