@@ -1,7 +1,17 @@
 # ASC WDS Slack "Internal Admin" app
 
 ## commands
-* search [postcode] [nmdsid] [name] [username] <value>
+* /asc-search [postcode] [nmdsid] [name] [username] <value>
+
+## examples
+* `/asc-search postcode SE19`
+* `/asc-search postcode SE19 3SS`
+* `/asc-search nmds 489`
+* `/asc-search name jack`
+* `/asc-search name blue`
+* `/asc-search username jack`
+* `/asc-search username green`
+
 
 ## Dependencies
 * https://github.com/slackapi/node-slack-interactive-messages
