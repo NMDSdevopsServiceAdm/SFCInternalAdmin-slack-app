@@ -1,0 +1,33 @@
+{
+  "name": "sfc-slack-internal-admin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wozzer72/sfc-internal-admin-slack-app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wozzer72/sfc-internal-admin-slack-app/issues"
+  },
+  "homepage": "https://github.com/wozzer72/sfc-internal-admin-slack-app#readme",
+  "dependencies": {
+    "aws-sdk": "^2.488.0",
+    "body-parser": "^1.19.0",
+    "convict": "^5.0.0",
+    "express": "^4.17.1",
+    "express-http-proxy": "^1.5.1",
+    "express-sanitizer": "^1.0.5",
+    "fs": "0.0.1-security",
+    "helmet": "^3.18.0",
+    "js-yaml": "^3.13.1",
+    "nodemon": "^1.19.1",
+    "xss-clean": "^0.1.1"
+  }
+}
