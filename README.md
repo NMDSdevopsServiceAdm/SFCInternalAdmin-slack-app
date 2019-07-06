@@ -12,9 +12,10 @@
 * `/asc-search username jack`
 * `/asc-search username green`
 
+* `/asc-approve-example`
 
 ## Dependencies
-* https://github.com/slackapi/node-slack-interactive-messages
+
 
 ## via ngrok proxy
 ngrok http 3000

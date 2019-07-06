@@ -119,6 +119,7 @@ const config = convict({
       secret: {
         doc: 'Slack signing secret',
         format: '*',
+        default: '',
         env: 'SLACK_SIGNING_SECRET'
       },
   },
