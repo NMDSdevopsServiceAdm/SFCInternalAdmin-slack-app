@@ -117,8 +117,9 @@ router.route('/').post(async (req, res) => {
           );
         } else {
           console.log("WA DEBUG - rejected")
-          // const sendDialog = await openDialog(payload, 'Warren Ayling');
 
+
+          // const sendDialog = await openDialog(payload, 'Warren Ayling');
           // if (sendDialog) {
           //   return res.status(200).send();
           // } else {
