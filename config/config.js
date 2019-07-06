@@ -122,6 +122,14 @@ const config = convict({
         default: '',
         env: 'SLACK_SIGNING_SECRET'
       },
+      registrations : {
+        webhook: {
+          doc: 'The URL to post registrations',
+          format: 'url',
+          default: 'http://localhost',
+          env: 'SLACK_REGISTRATION_WEBHOOK'
+        }
+      }
   },
   aws: {
     region: {

@@ -12,6 +12,7 @@ const xssClean = require('xss-clean');
 const sanitizer = require('express-sanitizer');
 
 const otherRoutes = require('./routes');
+const helperRoutes = require('./routes/helper');
 
 const app = express();
 
@@ -61,7 +62,7 @@ app.use('/', helmet({
  */
 
 // for parsing of JSON from request body
-//app.use(bodyParser.json());
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // this middleware add common 'no cache' headerst to the response
@@ -98,6 +99,7 @@ const interactiveRoute = (req, res, next) => {
 
 // open/reference endpoints
 app.use('/',otherRoutes);
+app.use('/helper', helperRoutes);
 app.post('/', interactiveRoute);
 app.use('/',rootEndpoint);
 
