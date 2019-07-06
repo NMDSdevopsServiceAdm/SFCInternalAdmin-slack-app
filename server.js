@@ -1,10 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const proxy = require('express-http-proxy');          // for service public/download content
+// const proxy = require('express-http-proxy');          // for service public/download content
 
 // app config
 const AppConfig = require('./config/appConfig');
 const config = require('./config/config');
+
+// interactive slack library
+const { createMessageAdapter } = require('@slack/interactive-messages');
 
 // security libraries
 const helmet = require('helmet');
@@ -75,6 +78,11 @@ app.use('/', helmet({
 // encodes all URL parameters
 // app.use('/', xssClean());
 // app.use('/', sanitizer());
+/*
+ * end security
+ */
+
+// for parsing of JSON from request body
 app.use(bodyParser.json());
 
 // this middleware add common 'no cache' headerst to the response
@@ -86,9 +94,8 @@ const nocache = (req, res, next) => {
 };
 app.use('/', nocache);
 
-/*
- * end security
- */
+const slackInteractions = createMessageAdapter(process.env.SLACK_SIGNING_SECRET);
+app.use('/slack/actions', slackInteractions.expressMiddleware());
 
 const rootEndpoint = (req, res, next) => {
     console.log("hit root endpoint: ", req.body);

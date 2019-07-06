@@ -1,7 +1,10 @@
 # ASC WDS Slack "Internal Admin" app
 
-# commands
+## commands
 * search [postcode] [nmdsid] [name] [username] <value>
 
-# via ngrok proxy
+## Dependencies
+* https://github.com/slackapi/node-slack-interactive-messages
+
+## via ngrok proxy
 ngrok http 3000

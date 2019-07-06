@@ -116,6 +116,11 @@ const config = convict({
           default: 'unknown',           // note - bug in notify - must provide a default value for it to use env var
           env: 'SLACK_URL'
       },
+      secret: {
+        doc: 'Slack signing secret',
+        format: '*',
+        env: 'SLACK_SIGNING_SECRET'
+      },
   },
   aws: {
     region: {
@@ -167,6 +172,8 @@ if (config.get('aws.secrets.use')) {
     config.set('slack.url', AWSSecrets.slackUrl());
     config.set('notify.key', AWSSecrets.govNotify());
     config.set('admin.url', AWSSecrets.adminUrl());
+
+    config.set('slack.secret', AWSSecrets.slackSecret());
 
     AppConfig.ready = true;
     AppConfig.emit(AppConfig.READY_EVENT);

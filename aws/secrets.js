@@ -25,6 +25,7 @@ const initialiseSecrets = async (region, wallet) => {
         Token_Secret: mySecrets.Token_Secret,
         NOTIFY_KEY: mySecrets.NOTIFY_KEY,
         ADMIN_URL: mySecrets.ADMIN_URL,
+        SLACK_SIGNING_SECRET: mySecrets.SLACK_SIGNING_SECRET,
       };
     }
 
@@ -84,6 +85,19 @@ const slackUrl = () => {
     throw new Error('Unknown secrets');
   }
 }
+
+const slackSecret = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.SLACK_SIGNING_SECRET) {
+      throw new Error('Unknown SLACK_SIGNING_SECRET secret');
+    } else {
+      return myLocalSecrets.SLACK_SIGNING_SECRET;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+}
+
 
 const  govNotify = () => {
   if (myLocalSecrets !== null) {
