@@ -122,6 +122,12 @@ const config = convict({
         default: '',
         env: 'SLACK_SIGNING_SECRET'
       },
+      client_secret: {
+        doc: 'The slack client secret to use when posting responses back to Slack',
+        format: '*',
+        default: '',
+        env: 'SLACK_CLIENT_SECRET'
+      },
       registrations : {
         webhook: {
           doc: 'The URL to post registrations',

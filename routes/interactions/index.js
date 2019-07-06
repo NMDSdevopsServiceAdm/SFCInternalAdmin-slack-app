@@ -11,7 +11,7 @@ const apiUrl = 'https://slack.com/api';
 // open the dialog by calling dialogs.open method and sending the payload
 const openDialog = async (payload, real_name) => {
   const dialogData = {
-    token:  config.get('slack.secret'),
+    token:  config.get('slack.client_secret'),
     trigger_id: payload.trigger_id,
     dialog: JSON.stringify({
       title: 'Save it to ClipIt!',
