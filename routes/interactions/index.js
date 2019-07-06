@@ -1,7 +1,65 @@
+const axios = require('axios');
+const qs = require('qs');
 const express = require('express');
+const config = require('../../config/config');
+const registrationApproval = require('../../utils/registrationApprovals');
+
 const router = express.Router();
 
-const registrationApproval = require('../../utils/registrationApprovals');
+const apiUrl = 'https://slack.com/api';
+
+// open the dialog by calling dialogs.open method and sending the payload
+const openDialog = async (payload, real_name) => {
+  const dialogData = {
+    token:  config.get('slack.secret'),
+    trigger_id: payload.trigger_id,
+    dialog: JSON.stringify({
+      title: 'Save it to ClipIt!',
+      callback_id: 'clipit',
+      submit_label: 'ClipIt',
+      elements: [
+         {
+           label: 'Reason for rejection',
+           type: 'textarea',
+           name: 'message',
+           value: ''
+         },
+         {
+           label: 'Posted by',
+           type: 'text',
+           name: 'send_by',
+           value: `${real_name}`
+         },
+         {
+           label: 'Importance',
+           type: 'select',
+           name: 'importance',
+           value: 'Medium 💎',
+           options: [
+             { label: 'High', value: 'High 💎💎✨' },
+             { label: 'Medium', value: 'Medium 💎' },
+             { label: 'Low', value: 'Low ⚪️' }
+           ],
+         },
+      ]
+    })
+  };
+
+  try {
+    // open the dialog by calling dialogs.open method and sending the payload
+    const dialogDataJSON = qs.stringify(dialogData);
+    console.log("WA DEBUG - posting dialog: ", dialogDataJSON);
+    const slackResponse = await axios.post(`${apiUrl}/dialog.open`, dialogDataJSON);
+
+    console.log("WA DEBUG - slack response: ", slackResponse)
+
+    return true;
+  } catch (err) {
+    console.error("openDialog - failed to post to slack: ", err);
+
+    return false;
+  }
+};
 
 router.route('/').post(async (req, res) => {
   // console.log("[POST] interactions: ", req.body);
@@ -18,6 +76,7 @@ router.route('/').post(async (req, res) => {
       case "registration":
         const processedRegistration = await registrationApproval(payload);
         if (processedRegistration === null) {
+          return res.status(500).send();
 
         } else if (processedRegistration) {
           console.log("WA DEBUG - approved")
@@ -58,6 +117,14 @@ router.route('/').post(async (req, res) => {
           );
         } else {
           console.log("WA DEBUG - rejected")
+          // const sendDialog = await openDialog(payload, 'Warren Ayling');
+
+          // if (sendDialog) {
+          //   return res.status(200).send();
+          // } else {
+          //   return res.status(500).send();
+          // }
+
           return res.status(200).json({
             username: 'markdownbot',
             markdwn: true,
@@ -90,7 +157,7 @@ router.route('/').post(async (req, res) => {
                 // ts: 123456789
               }
             ]
-          });  
+          });
         }
         break;
     }
