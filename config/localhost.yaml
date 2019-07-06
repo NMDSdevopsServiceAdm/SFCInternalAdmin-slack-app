@@ -8,3 +8,6 @@ jwt:
     iss: 'localhost'
     ttl:
         login: 60
+
+app:
+    url: https://sfcdev.cloudapps.digital

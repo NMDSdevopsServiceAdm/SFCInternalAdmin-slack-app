@@ -141,6 +141,13 @@ const config = convict({
       }
     },
   },
+  app: {
+    url: {
+      doc: 'The base URL to ASC WDS',
+      format: 'url',
+      default: 'http://localhost:3001'
+    },
+  }
 });
 
 // Load environment dependent configuration

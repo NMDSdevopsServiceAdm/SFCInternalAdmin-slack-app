@@ -8,3 +8,6 @@
 
 ## via ngrok proxy
 ngrok http 3000
+
+# TODO
+* verify slack messages using signed secret - from config

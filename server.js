@@ -76,14 +76,15 @@ app.use('/', helmet({
 }));
 
 // encodes all URL parameters
-// app.use('/', xssClean());
-// app.use('/', sanitizer());
+app.use('/', xssClean());
+app.use('/', sanitizer());
 /*
  * end security
  */
 
 // for parsing of JSON from request body
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // this middleware add common 'no cache' headerst to the response
 const nocache = (req, res, next) => {
