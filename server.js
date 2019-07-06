@@ -6,9 +6,6 @@ const bodyParser = require('body-parser');
 const AppConfig = require('./config/appConfig');
 const config = require('./config/config');
 
-// interactive slack library
-const { createMessageAdapter } = require('@slack/interactive-messages');
-
 // security libraries
 const helmet = require('helmet');
 const xssClean = require('xss-clean');
@@ -17,25 +14,6 @@ const sanitizer = require('express-sanitizer');
 const otherRoutes = require('./routes');
 
 const app = express();
-
-
-/* public/download - proxy interception */
-// const publicDownloadBaseUrl = config.get('public.download.baseurl');
-// app.use('/public/download', proxy(
-//     publicDownloadBaseUrl,
-//     {
-//         proxyReqPathResolver: function (req) {
-//           const updatedPath = publicDownloadBaseUrl + req.url;
-//           //console.log("public/download proxy API request to: ", `${updatedPath}`)
-//           return updatedPath;
-//         }
-//     }
-// ));
-
-// // redirect the admin application
-// app.use('/admin', (req, res) => {
-//   res.redirect(301, config.get('admin.url'));
-// });
 
 /*
  * security - incorproate helmet & xss-clean (de facto/good practice headers) across all endpoints
@@ -76,14 +54,14 @@ app.use('/', helmet({
 }));
 
 // encodes all URL parameters
-app.use('/', xssClean());
-app.use('/', sanitizer());
+// app.use('/', xssClean());
+// app.use('/', sanitizer());
 /*
  * end security
  */
 
 // for parsing of JSON from request body
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // this middleware add common 'no cache' headerst to the response
@@ -94,9 +72,6 @@ const nocache = (req, res, next) => {
     next();
 };
 app.use('/', nocache);
-
-const slackInteractions = createMessageAdapter(process.env.SLACK_SIGNING_SECRET);
-app.use('/slack/actions', slackInteractions.expressMiddleware());
 
 const rootEndpoint = (req, res, next) => {
     console.log("hit root endpoint: ", req.body);
