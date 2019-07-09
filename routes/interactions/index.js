@@ -106,7 +106,7 @@ router.route('/').post(async (req, res) => {
                         "short": true
                       },
                   ],
-                  image_url: "https://cdn3.iconfinder.com/data/icons/3d-glossy-basic/512/ok-512.png",
+                  image_url: "https://i.ya-webdesign.com/images/approved-stamp-png-7.png",
                   // thumb_url: "https://sfcstaging.cloudapps.digital/assets/images/logo.png",
                   footer: "SFC ASCWDS",
                   // footer_icon: "https://sfcstaging.cloudapps.digital/assets/images/logo.png",
