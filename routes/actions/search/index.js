@@ -1,44 +1,34 @@
 const express = require('express');
 const router = express.Router();
 const config = require('../../../config/config');
+const request = require('request');
 
 const isVerified = require('../../../utils/verifySignature').isVerified;
 
-const userData = [
-  {
-    uid: '74e520c5-6fd7-417a-8472-7e3e46da76b8',
-    username: 'aylingw',
-    name: 'Warren Ayling',
-    establishmentUid: '3f4b2ac9-4a90-4b84-827c-0c70c765a5ce',
-  },
-  {
-    uid: 'c638a92f-829d-48d2-ac2e-eb3a6bfe959a',
-    username: 'greenj',
-    name: 'Jackie Green',
-    establishmentUid: '4f5cae59-dac8-4c0a-aace-9eee9f5f0833',
-  }
-];
+// Needs moving to config
+const baseURL = 'http://ec2-34-255-118-188.eu-west-1.compute.amazonaws.com:1337';
+const argv = {username: "brianenduser", password:"password"};
 
-const establishmentData = [
-  {
-    uid: '3f4b2ac9-4a90-4b84-827c-0c70c765a5ce',
-    nmdsid: 'A7838489',
-    establishmentName: 'establishment 1',
-    postcode: 'SE19 3NS'
-  },
-  {
-    uid: '8b391f4c-4f36-4917-85bf-679ba35f3227',
-    nmdsid: 'W7837478',
-    establishmentName: 'establishment 100',
-    postcode: 'SE19 3SS'
-  },
-  {
-    uid: '4f5cae59-dac8-4c0a-aace-9eee9f5f0833',
-    nmdsid: 'D204989',
-    establishmentName: 'The only Establishment',
-    postcode: 'LS1 1AA'
-  }
-];
+// Local constants
+const loginURL = baseURL+'/auth/local';
+const establishmentURL = baseURL+'/establishments';
+const userURL = baseURL+'/appusers';
+
+const requestTypes = {
+  postcode: establishmentURL+'?Postcode_contains=',
+  nmds: establishmentURL+'?NMDSID_eq=',
+  location: establishmentURL+'?PK_eq=',
+  name:establishmentURL+'?PK_eq=',
+  username:establishmentURL+'?PK_eq='
+}
+
+const requestUserTypes = {
+  name:userURL+'?FullNameValue_contains=',
+  username:userURL+'?Username_contains='
+}
+
+const establishmentMap=function(res) {return {establishmentName: res.Name, nmdsid: res.NMDSID, postcode: res.Postcode, uid: res.UID}}
+const userMap=function(res) {return {name: res.FullNameValue, username: res.Username, establishmentId: res.EstablishmentID}}
 
 router.route('/').post((req, res) => {
   // TODO - verifying 
@@ -51,7 +41,7 @@ router.route('/').post((req, res) => {
   // extract input
   const command = req.body.command;
   const text = req.body.text;
-
+    
   if (!command || VALID_COMMAND !== command) return res.status(400).send('Invalid command');
   if (!text) return res.status(400).send('Invalid search parameters');
 
@@ -61,11 +51,9 @@ router.route('/').post((req, res) => {
   tokens && Array.isArray(tokens) && tokens.length > 0 ? tokens.shift() : true;
   const searchValues = tokens && Array.isArray(tokens) && tokens.length > 0 ? tokens.join(' ') : null;
 
-  const ALLOWED_SEARCH_KEYS = ['postcode', 'nmds', 'name', 'username'];
-
-  if (!searchKey || !ALLOWED_SEARCH_KEYS.includes(searchKey)) {
+  if(!searchKey || requestTypes[searchKey]==undefined) {
     return res.status(200).json({
-      text: `${command} - unexpected search key ('postcode', 'nmds', 'name', 'username') - received ${tokens[0]}`,
+      text: `${command} - unexpected search key ${Object.keys(requestTypes)} - received ${tokens[0]}`,
       username: 'markdownbot',
       markdwn: true,
     });
@@ -81,45 +69,82 @@ router.route('/').post((req, res) => {
 
   let results = [];
   const regex = new RegExp(searchValues, 'i');
+
   switch (searchKey) {
     case 'postcode':
-      results = establishmentData.filter(val => {
-        return regex.test(val.postcode);
-      });
-      break;
+      // Fallthrough
     case 'nmds':
-      results = establishmentData.filter(val => {
-        return regex.test(val.nmdsid);
-      });
+      // Fallthrough
+    case 'location':
+      return getEstablishmentData(command, searchKey, searchValues, res);
       break;
-    case 'name':
-      results = userData
-                  .filter(val => {
-                    return regex.test(val.name);
-                  })
-                  .map(val => {
-                    const matchingEstablishment = establishmentData.find(estVal => estVal.uid === val.establishmentUid);
-                    return {
-                      ...val,
-                      ...matchingEstablishment,
-                    }
-                  });
-      break;
-    case 'username':
-      results = userData
-        .filter(val => {
-          return regex.test(val.username);
-        })
-        .map(val => {
-          const matchingEstablishment = establishmentData.find(estVal => estVal.uid === val.establishmentUid);
-          return {
-            ...val,
-            ...matchingEstablishment,
-          }
-        });
+  case 'name':
+      // Fallthrough
+  case 'username':
+      return getUserData(command, searchKey, searchValues, res);
       break;
   }
+});
 
+function getEstablishmentData(command, searchKey, searchValues, res) {
+
+  getToken()
+  .then((token) => {
+    searchType(token,requestTypes[searchKey],searchKey,searchValues,establishmentMap)
+      .then((results) => {
+        return responseBuilder(res, command, searchKey, searchValues, results);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: `Strapi GetData ${err}`});
+      });
+  })
+  .catch((err) => {
+    console.log(err);
+    res.status(500).json({ error: `Strapi Login ${err}`});
+  });
+}
+
+function getUserData(command, searchKey, searchValues, res) {
+
+  getToken()
+  .then((token) => {
+    searchType(token,requestUserTypes[searchKey],searchKey,searchValues,userMap)
+      .then((users) => {
+
+        var results=[];
+        
+        if(users.length!=0) {
+          //        console.log('user.establishmentId='+users[0].establishmentId);
+          searchType(token,requestTypes[searchKey],searchKey,users[0].establishmentId,establishmentMap)
+            .then((establishments) => {
+              var results=[{
+                ...users[0],
+                ...establishments[0]
+              }];
+              return responseBuilder(res, command, searchKey, searchValues, results);
+            })
+            .catch((err) => {
+              console.log(err);
+              res.status(500).json({ error: `Strapi GetUserData - establishment ${err}`});
+            });
+          } else {
+            return responseBuilder(res, command, searchKey, searchValues, users);
+          }
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: `Strapi GetUserData - user ${err}`});
+      });
+  })
+  .catch((err) => {
+    console.log(err);
+    res.status(500).json({ error: `Strapi GetUserData Login ${err}`});
+  });
+}
+
+function responseBuilder(res, command, searchKey, searchValues, results)
+{
   return res.status(200).json({
     text: `${command} - ${searchKey} on ${searchValues} - Results (#${results.length})`,
     username: 'markdownbot',
@@ -133,6 +158,79 @@ router.route('/').post((req, res) => {
       }
     }),
   });
-});
+}
+
+function getToken() {
+	return new Promise((resolve, reject) => {
+
+		request.post(loginURL,
+	               {json: true, body: {identifier: argv.username, password: argv.password} },
+				   function(err,res, body) {
+
+					if (err) reject(err);
+    		        if (res.statusCode != 200) {
+            		    reject('Invalid status code <' + res.statusCode + '>');
+            		}
+          resolve(body.jwt);
+	  });
+	});
+}
+
+function searchPostCode(token, value) {
+  console.log("searchPostCode "+value);
+
+  return new Promise((resolve, reject) => {
+    var searchURL=establishmentURL+postCodeContains+value;
+    request.get(searchURL, {json: true, auth: { bearer: token } }, function(err,res, body) {
+      if (err) {
+          console.log('err POSTed '+searchURL);
+          reject(err);
+      }
+    
+      if (res.statusCode != 200) {
+        console.log('!200 POSTed '+searchURL);
+        reject('Invalid status code <' + res.statusCode + '>');
+      }
+
+      var resArry=Array.from(body);
+      var resp=
+        resArry.map(res => {
+//          console.dir(res);
+          return {establishmentName: res.Name, nmdsid: res.NMDSID, postcode: res.Postcode, uid: res.UID};
+        });
+
+      resolve(resp);
+    });
+  });
+}
+
+function searchType(token, queryURL, searchKey, value, responseMap) {
+  console.log("searchType "+queryURL+" "+value);
+
+  return new Promise((resolve, reject) => {
+    var searchURL=queryURL+value;
+    request.get(searchURL, {json: true, auth: { bearer: token } }, function(err,res, body) {
+      if (err) {
+          console.log('err POSTed '+searchURL);
+          reject(err);
+      }
+    
+      if (res.statusCode != 200) {
+        console.log('!200 POSTed '+searchURL);
+        reject('Invalid status code <' + res.statusCode + '>');
+      }
+
+      var resArry=Array.from(body);
+
+      var resp=
+        resArry.map(res => responseMap(res)
+      );
+
+      if(resp==undefined) { resp=[] };
+
+      resolve(resp);
+    });
+  });
+}
 
 module.exports = router;
