@@ -172,7 +172,7 @@ function getToken() {
 
 					if (err) reject(err);
     		        if (res.statusCode != 200) {
-            		    reject('Invalid status code <' + res.statusCode + '>');
+            		    reject('Login Invalid status code <' + res.statusCode + '>');
             		}
           resolve(body.jwt);
 	  });

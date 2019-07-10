@@ -3,6 +3,10 @@
 ## commands
 * /asc-search [postcode] [nmdsid] [name] [username] <value>
 
+## Config
+The default username is in env config but please set the password in env;
+set SEARCH_STRAPI_PASSWORD=xxxxx
+
 ## examples
 * `/asc-search postcode SE19`
 * `/asc-search postcode SE19 3SS`

@@ -171,12 +171,13 @@ const config = convict({
       strapiUsername: {
         doc: 'The base Username to login to STRAPI',
         format: String,
-        default: 'brianenduser'
+        default: 'configure_username_here'
       },
       strapiPassword: {
         doc: 'The base Password to login to STRAPI',
         format: String,
-        default: 'password'
+        default: 'configure_password_here',
+        env: 'SEARCH_STRAPI_PASSWORD'
       }
     }
   }
