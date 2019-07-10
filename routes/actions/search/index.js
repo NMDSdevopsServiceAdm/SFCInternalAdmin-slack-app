@@ -43,7 +43,7 @@ router.route('/').post((req, res) => {
     console.log("WARNING - search - VerifySignature disabled");
   }
 
-  //console.log("[POST] actions/search - body: ", req.body);
+  console.log("[POST] actions/search - body: ", req.body);
 
   const VALID_COMMAND = '/asc-search';
 
