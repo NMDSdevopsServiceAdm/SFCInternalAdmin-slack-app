@@ -36,8 +36,12 @@ const establishmentMap=function(res) {return {establishmentName: res.Name, nmdsi
 const userMap=function(res) {return {name: res.FullNameValue, username: res.Username, establishmentId: res.EstablishmentID}}
 
 router.route('/').post((req, res) => {
-  // TODO - verifying 
-  // if (!isVerified(req)) return res.status(401).send();
+
+  if(config.get('app.search.verifySignature')) {
+    if (!isVerified(req)) return res.status(401).send();
+  } else {
+    console.log("WARNING - search - VerifySignature disabled");
+  }
 
   //console.log("[POST] actions/search - body: ", req.body);
 

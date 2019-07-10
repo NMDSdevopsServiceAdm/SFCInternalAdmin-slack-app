@@ -163,6 +163,11 @@ const config = convict({
       default: 'http://localhost:3001'
     },
     search: {
+      verifySignature: {
+        doc: 'Weather to verify the Slack Token is signed correctly.',
+        format: 'Boolean',
+        default: true
+      },
       strapiBaseURL: {
         doc: 'The base URL to STRAPI',
         format: 'url',

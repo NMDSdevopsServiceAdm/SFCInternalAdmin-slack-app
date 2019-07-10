@@ -14,3 +14,4 @@ app:
     search:
         strapiBaseURL: http://ec2-34-255-118-188.eu-west-1.compute.amazonaws.com:1337
         strapiUsername: brianenduser
+        verifySignature: true

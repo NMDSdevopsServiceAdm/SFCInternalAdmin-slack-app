@@ -5,7 +5,9 @@
 
 ## Config
 The default username is in env config but please set the password in env;
-set SEARCH_STRAPI_PASSWORD=xxxxx
+
+Windows -> set SEARCH_STRAPI_PASSWORD=xxxxx
+Linux -> export set SEARCH_STRAPI_PASSWORD=xxxxx
 
 ## examples
 * `/asc-search postcode SE19`
