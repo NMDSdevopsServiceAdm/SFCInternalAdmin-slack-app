@@ -14,7 +14,7 @@ const userURL = baseURL+'/appusers';
 const requestTypes = {
   postcode: establishmentURL+'?Postcode_contains=',
   nmds: establishmentURL+'?NMDSID_eq=',
-  location: establishmentURL+'?PK_eq=',
+  locationid: establishmentURL+'?PK_eq=',
   name:establishmentURL+'?PK_eq=',
   username:establishmentURL+'?PK_eq='
 }
