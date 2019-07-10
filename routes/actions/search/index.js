@@ -11,6 +11,14 @@ const loginURL = baseURL+'/auth/local';
 const establishmentURL = baseURL+'/establishments';
 const userURL = baseURL+'/appusers';
 
+const dispatchers = {
+  postcode: getEstablishmentData,
+  nmds: getEstablishmentData,
+  locationid: getEstablishmentData,
+  name: getUserData,
+  username: getUserData
+}
+
 const requestTypes = {
   postcode: establishmentURL+'?Postcode_contains=',
   nmds: establishmentURL+'?NMDSID_eq=',
@@ -48,9 +56,9 @@ router.route('/').post((req, res) => {
   tokens && Array.isArray(tokens) && tokens.length > 0 ? tokens.shift() : true;
   const searchValues = tokens && Array.isArray(tokens) && tokens.length > 0 ? tokens.join(' ') : null;
 
-  if(!searchKey || requestTypes[searchKey]==undefined) {
+  if(!searchKey || dispatchers[searchKey]==undefined) {
     return res.status(200).json({
-      text: `${command} - unexpected search key ${Object.keys(requestTypes)} - received ${tokens[0]}`,
+      text: `${command} - unexpected search key ${Object.keys(dispatchers)} - received ${tokens[0]}`,
       username: 'markdownbot',
       markdwn: true,
     });
@@ -67,20 +75,7 @@ router.route('/').post((req, res) => {
   let results = [];
   const regex = new RegExp(searchValues, 'i');
 
-  switch (searchKey) {
-    case 'postcode':
-      // Fallthrough
-    case 'nmds':
-      // Fallthrough
-    case 'location':
-      return getEstablishmentData(command, searchKey, searchValues, res);
-      break;
-  case 'name':
-      // Fallthrough
-  case 'username':
-      return getUserData(command, searchKey, searchValues, res);
-      break;
-  }
+  return dispatchers[searchKey](command, searchKey, searchValues, res);
 });
 
 function getEstablishmentData(command, searchKey, searchValues, res) {
