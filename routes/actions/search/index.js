@@ -5,11 +5,8 @@ const request = require('request');
 
 const isVerified = require('../../../utils/verifySignature').isVerified;
 
-// Needs moving to config
-const baseURL = 'http://ec2-34-255-118-188.eu-west-1.compute.amazonaws.com:1337';
-const argv = {username: "brianenduser", password:"password"};
-
 // Local constants
+const baseURL=config.get('app.search.strapiBaseURL');
 const loginURL = baseURL+'/auth/local';
 const establishmentURL = baseURL+'/establishments';
 const userURL = baseURL+'/appusers';
@@ -170,10 +167,12 @@ function responseBuilder(res, command, searchKey, searchValues, results)
 }
 
 function getToken() {
-	return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
 
 		request.post(loginURL,
-	               {json: true, body: {identifier: argv.username, password: argv.password} },
+                 {json: true, body:
+                  {identifier: config.get('app.search.strapiUsername'),
+                  password: config.get('app.search.strapiPassword')} },
 				   function(err,res, body) {
 
 					if (err) reject(err);

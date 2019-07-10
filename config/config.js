@@ -162,6 +162,23 @@ const config = convict({
       format: 'url',
       default: 'http://localhost:3001'
     },
+    search: {
+      strapiBaseURL: {
+        doc: 'The base URL to STRAPI',
+        format: 'url',
+        default: 'http://localhost:1337'
+      },
+      strapiUsername: {
+        doc: 'The base Username to login to STRAPI',
+        format: String,
+        default: 'brianenduser'
+      },
+      strapiPassword: {
+        doc: 'The base Password to login to STRAPI',
+        format: String,
+        default: 'password'
+      }
+    }
   }
 });
 
