@@ -113,15 +113,24 @@ function getUserData(command, searchKey, searchValues, res) {
       .then((users) => {
 
         var results=[];
-        
+
         if(users.length!=0) {
-          //        console.log('user.establishmentId='+users[0].establishmentId);
-          searchType(token,requestTypes[searchKey],searchKey,users[0].establishmentId,establishmentMap)
-            .then((establishments) => {
-              var results=[{
-                ...users[0],
-                ...establishments[0]
-              }];
+          var promises=[];
+
+          for(i=0;i<users.length;i++) {
+            promises.push(
+              searchType(token,requestTypes[searchKey],searchKey,users[i].establishmentId,establishmentMap)
+            );
+          }
+
+          Promise.all(promises)
+            .then((establishmentArrys) => {
+              establishments=[].concat.apply([],establishmentArrys);
+              var results=[];
+
+              for(i=0;i<users.length;i++) {
+                results.push({...users[i],...establishments[i]});
+              }
               return responseBuilder(res, command, searchKey, searchValues, results);
             })
             .catch((err) => {
@@ -176,36 +185,8 @@ function getToken() {
 	});
 }
 
-function searchPostCode(token, value) {
-  console.log("searchPostCode "+value);
-
-  return new Promise((resolve, reject) => {
-    var searchURL=establishmentURL+postCodeContains+value;
-    request.get(searchURL, {json: true, auth: { bearer: token } }, function(err,res, body) {
-      if (err) {
-          console.log('err POSTed '+searchURL);
-          reject(err);
-      }
-    
-      if (res.statusCode != 200) {
-        console.log('!200 POSTed '+searchURL);
-        reject('Invalid status code <' + res.statusCode + '>');
-      }
-
-      var resArry=Array.from(body);
-      var resp=
-        resArry.map(res => {
-//          console.dir(res);
-          return {establishmentName: res.Name, nmdsid: res.NMDSID, postcode: res.Postcode, uid: res.UID};
-        });
-
-      resolve(resp);
-    });
-  });
-}
-
 function searchType(token, queryURL, searchKey, value, responseMap) {
-  console.log("searchType "+queryURL+" "+value);
+//  console.log("searchType "+queryURL+" "+value);
 
   return new Promise((resolve, reject) => {
     var searchURL=queryURL+value;
