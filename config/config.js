@@ -162,6 +162,14 @@ const config = convict({
       format: 'url',
       default: 'http://localhost:3001'
     },
+    find: {
+      slackToken: {
+        doc: 'The OAuth Token to login to Slack',
+        format: String,
+        default: 'configure_token_here',
+        env: 'FIND_SLACK_TOKEN'
+      }
+    },
     search: {
       verifySignature: {
         doc: 'Weather to verify the Slack Token is signed correctly.',

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const request = require('request');
+const config = require('../../../config/config');
 
 router.route('/').post((req, res) => {
   console.log("[POST] actions/find: ", req.body);
@@ -35,7 +36,7 @@ function sendDialog(token, trigger_id) {
       }
     });
 
-    var token='xoxp-284151022912-682481769248-689859748852-ff15c6d4c7f61afc8649e398739ceb7b';
+    var token=config.get("app.find.slackToken");
     var postTo="https://slack.com/api/dialog.open";
 
     console.log(postTo);
