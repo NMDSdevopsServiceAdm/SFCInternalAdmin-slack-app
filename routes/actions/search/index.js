@@ -43,7 +43,7 @@ router.route('/').post((req, res) => {
     console.log("WARNING - search - VerifySignature disabled");
   }
 
-  console.log("[POST] actions/search - body: ", req.body);
+//  console.log("[POST] actions/search - body: ", req.body);
 
   const VALID_COMMAND = '/asc-search';
 
@@ -174,10 +174,16 @@ function getToken() {
                   password: config.get('app.search.strapiPassword')} },
 				   function(err,res, body) {
 
-					if (err) reject(err);
-    		        if (res.statusCode != 200) {
-            		    reject('Login Invalid status code <' + res.statusCode + '>');
-            		}
+          if (err!=undefined) {
+            console.log('err login '+loginURL);
+            reject(err);
+             return;
+          };
+          if (res.statusCode != 200) {
+            console.log('!200 login '+loginURL);
+            reject('Login Invalid status code <' + res.statusCode + '>');
+              return;
+          }
           resolve(body.jwt);
 	  });
 	});
@@ -192,11 +198,13 @@ function searchType(token, queryURL, searchKey, value, responseMap) {
       if (err) {
           console.log('err POSTed '+searchURL);
           reject(err);
-      }
+          return;
+        }
     
       if (res.statusCode != 200) {
         console.log('!200 POSTed '+searchURL);
         reject('Invalid status code <' + res.statusCode + '>');
+        return;
       }
 
       var resArry=Array.from(body);
