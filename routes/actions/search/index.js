@@ -246,18 +246,19 @@ function messageAsync(res, command, searchKey, searchValues, results, msgBuilder
     }),
   });
 
-  sendResults(msgBuilder.response_url, resultMsgJSON)
+  sendResults(msgBuilder.responseURL, resultMsgJSON)
       .catch((err) => { console.log("sendResults "+err)});
 }
 
-function sendResults(response_url, resultMsgJSON) {
+function sendResults(responseURL, resultMsgJSON) {
   return new Promise((resolve, reject) => {
 
     var token=config.get("app.find.slackToken");
 //    var postTo=config.get("app.find.slackURL");
 
-    request.post({uri:response_url,
-                  auth: {bearer:token},
+    console.log(responseURL);
+
+    request.post({uri:responseURL,
                   body: resultMsgJSON,
                   headers: {'Content-Type':'application/json; charset=\"utf-8\"'} },
 				   function(err,res, body) {
@@ -286,6 +287,7 @@ router.route('/callback').post((req, res) => {
 
   //console.log("POST find/callback " + req.body.payload);
   req.body=JSON.parse(req.body.payload);
+  console.log(req.body);
   console.log(req.body.submission);
 
   var msgBuilder={fn: messageAsync, async: true, responseURL: req.body.response_url};
