@@ -56,27 +56,6 @@ app.use('/', helmet({
     }
 }));
 
-// encodes all URL parameters
-// app.use('/', xssClean());
-// app.use('/', sanitizer());
-/*
- * end security
- */
-
-// for verifying signature
-//app.use('/actions',function(req, res, next){
-//    var data = "";
-//    req.on('data', function(chunk){
-//      data += chunk;
-//      next();
-//    })
-//    req.on('end', function(){
-//      req.rawBody = data;
-//      req.body=JSON.parse(data);
-//      next();
-//    })
-//});
-
 function getRaw(req, res, next) {
     req.rawBody=req.body;
     req.body=querystring.parse(req.rawBody);
@@ -85,8 +64,11 @@ function getRaw(req, res, next) {
 
 // for parsing of JSON from request body
 app.use(bodyParser.json());
+
+// Look out for our Slack 
 app.use(bodyParser.text({ type: 'application/x-www-form-urlencoded' }));
 app.use(getRaw);
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // this middleware add common 'no cache' headerst to the response

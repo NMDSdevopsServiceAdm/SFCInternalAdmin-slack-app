@@ -163,6 +163,11 @@ const config = convict({
       default: 'http://localhost:3001'
     },
     find: {
+      verifySignature: {
+        doc: 'Weather to verify the Slack Token is signed correctly.',
+        format: 'Boolean',
+        default: true
+      },
       slackToken: {
         doc: 'The OAuth Token to login to Slack',
         format: String,
