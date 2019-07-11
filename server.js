@@ -99,7 +99,7 @@ const nocache = (req, res, next) => {
 app.use('/', nocache);
 
 const rootEndpoint = (req, res, next) => {
-    console.log("hit root endpoint: ", req.body);
+    console.log("WA DEBUG hit root endpoint: ", req.originalUrl, req.headers);
     return res.status(200).json({
         status: true
     });
