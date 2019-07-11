@@ -3,11 +3,18 @@ const router = express.Router();
 const request = require('request');
 const config = require('../../../config/config');
 
-router.route('/').post((req, res) => {
-  console.log("[POST] actions/find: ", req.body);
+const isVerified = require('../../../utils/verifySignature').isVerified;
 
-  console.log(req.body.trigger_id);
-  console.log(req.body.token);
+const search = require('../search');
+
+router.route('/').post((req, res) => {
+  if(config.get('app.find.verifySignature')) {
+    if (!isVerified(req)) return res.status(401).send();
+  } else {
+    console.log("WARNING - find - VerifySignature disabled");
+  }
+
+//  console.log("[POST] actions/find: ", req.body);
 
   sendDialog(req.body.token,req.body.trigger_id)
     .then(() => {
@@ -25,19 +32,31 @@ function sendDialog(token, trigger_id) {
 
     var dialogDataJSON=JSON.stringify({
       "trigger_id": trigger_id,
-      "response_url": config.get("app.find.responseURL"),
       "dialog": {
-        "callback_id": "bmo-callbackid",
-        "title":"BMO Dialog",
-        "elements": [{
-          "type": "text",
-          "label": "Enter something",
-          "name": "enter"
-        }]
-      }
+        "callback_id": "find-callbackid",
+        "title":"ASC Search",
+        "elements": [
+          {
+            "label": "Search Type",
+            "type": "select",
+            "name": "command",
+            "options": [
+              {"label":"Establishment postcode contains","value":"postcode"},
+              {"label":"Establishment location (PK) Identifier","value":"locationid"},
+              {"label":"Establishment NMDS Identifier","value":"nmds"},
+              {"label":"User fullname contains","value":"name"},
+              {"label":"Username contains","value":"username"}
+            ]
+          },
+          {
+            "type": "text",
+            "label": "Value",
+            "name": "value"
+          }],
+        }
     });
 
-    console.dir(JSON.parse(dialogDataJSON));
+    //console.dir(JSON.parse(dialogDataJSON));
 
     var token=config.get("app.find.slackToken");
     var postTo=config.get("app.find.slackURL");
@@ -61,6 +80,5 @@ function sendDialog(token, trigger_id) {
 	  });
 	});
 }
-
 
 module.exports = router;

@@ -79,29 +79,35 @@ router.route('/').post((req, res) => {
   let results = [];
   const regex = new RegExp(searchValues, 'i');
 
-  return dispatchers[searchKey](command, searchKey, searchValues, res);
+  var msgBuilder={fn: responseBuilder, async: false };
+
+  return dispatchers[searchKey](command, searchKey, searchValues, res, msgBuilder);
 });
 
-function getEstablishmentData(command, searchKey, searchValues, res) {
+function getEstablishmentData(command, searchKey, searchValues, res, msgBuilder) {
 
   getToken()
   .then((token) => {
     searchType(token,requestTypes[searchKey],searchKey,searchValues,establishmentMap)
       .then((results) => {
-        return responseBuilder(res, command, searchKey, searchValues, results);
+        return msgBuilder.fn(res, command, searchKey, searchValues, results, msgBuilder);
       })
       .catch((err) => {
         console.log(err);
-        res.status(500).json({ error: `Strapi GetData ${err}`});
+        if(!msgBuilder.async) {
+          res.status(500).json({ error: `Strapi GetData ${err}`});
+        }
       });
   })
   .catch((err) => {
     console.log(err);
-    res.status(500).json({ error: `Strapi Login ${err}`});
+    if(!msgBuilder.async) {
+      res.status(500).json({ error: `Strapi Login ${err}`});
+    }
   });
 }
 
-function getUserData(command, searchKey, searchValues, res) {
+function getUserData(command, searchKey, searchValues, res, msgBuilder) {
 
   getToken()
   .then((token) => {
@@ -127,19 +133,23 @@ function getUserData(command, searchKey, searchValues, res) {
               for(i=0;i<users.length;i++) {
                 results.push({...users[i],...establishments[i]});
               }
-              return responseBuilder(res, command, searchKey, searchValues, results);
+              return msgBuilder.fn(res, command, searchKey, searchValues, results, msgBuilder);
             })
             .catch((err) => {
               console.log(err);
-              res.status(500).json({ error: `Strapi GetUserData - establishment ${err}`});
+              if(!msgBuilder.async) {
+                res.status(500).json({ error: `Strapi GetUserData - establishment ${err}`});
+              }
             });
           } else {
-            return responseBuilder(res, command, searchKey, searchValues, users);
+            return msgBuilder.fn(res, command, searchKey, searchValues, users, msgBuilder);
           }
       })
       .catch((err) => {
         console.log(err);
-        res.status(500).json({ error: `Strapi GetUserData - user ${err}`});
+        if(!msgBuilder.async) {
+            res.status(500).json({ error: `Strapi GetUserData - user ${err}`});
+        }
       });
   })
   .catch((err) => {
@@ -219,5 +229,73 @@ function searchType(token, queryURL, searchKey, value, responseMap) {
     });
   });
 }
+
+function messageAsync(res, command, searchKey, searchValues, results, msgBuilder)
+{
+  var resultMsgJSON=JSON.stringify({
+    text: `${command} - ${searchKey} on ${searchValues} - Results (#${results.length})`,
+    username: 'markdownbot',
+    markdwn: true,
+    pretext: 'is this a match',
+    attachments: results.map(thisResult => {
+      return {
+        //color: 'good',
+        title: `${thisResult.name? thisResult.name + ' - ' + thisResult.username + ' -' : ''}${thisResult.establishmentName}: ${thisResult.nmdsid} - ${thisResult.postcode}`,
+        text: `${config.get('app.url')}/workspace/${thisResult.uid}`,
+      }
+    }),
+  });
+
+  sendResults(msgBuilder.response_url, resultMsgJSON)
+      .catch((err) => { console.log("sendResults "+err)});
+}
+
+function sendResults(response_url, resultMsgJSON) {
+  return new Promise((resolve, reject) => {
+
+    var token=config.get("app.find.slackToken");
+//    var postTo=config.get("app.find.slackURL");
+
+    request.post({uri:response_url,
+                  auth: {bearer:token},
+                  body: resultMsgJSON,
+                  headers: {'Content-Type':'application/json; charset=\"utf-8\"'} },
+				   function(err,res, body) {
+
+					if (err) reject(err);
+          if (res.statusCode != 200) {
+              reject('sendResults Invalid status code <' + res.statusCode + '>');
+          }
+
+          if(body!='{\"ok\":true}') {
+            reject(body);
+          } 
+
+          resolve(body);
+	  });
+	});
+}
+
+router.route('/callback').post((req, res) => {
+
+  if(config.get('app.find.verifySignature')) {
+    if (!isVerified(req)) return res.status(401).send();
+  } else {
+    console.log("WARNING - find/callback - VerifySignature disabled");
+  }
+
+  //console.log("POST find/callback " + req.body.payload);
+  req.body=JSON.parse(req.body.payload);
+  console.log(req.body.submission);
+
+  var msgBuilder={fn: messageAsync, async: true, responseURL: req.body.response_url};
+
+  dispatchers[req.body.submission.command](req.body.submission.command, 
+                                           req.body.submission.command,
+                                           req.body.submission.value,
+                                           res, msgBuilder);
+
+  res.status(200).json();
+});
 
 module.exports = router;
