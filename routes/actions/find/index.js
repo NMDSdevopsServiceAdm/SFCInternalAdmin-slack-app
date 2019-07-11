@@ -25,6 +25,7 @@ function sendDialog(token, trigger_id) {
 
     var dialogDataJSON=JSON.stringify({
       "trigger_id": trigger_id,
+      "response_url": config.get("app.find.responseURL"),
       "dialog": {
         "callback_id": "bmo-callbackid",
         "title":"BMO Dialog",
@@ -36,10 +37,10 @@ function sendDialog(token, trigger_id) {
       }
     });
 
-    var token=config.get("app.find.slackToken");
-    var postTo="https://slack.com/api/dialog.open";
+    console.dir(JSON.parse(dialogDataJSON));
 
-    console.log(postTo);
+    var token=config.get("app.find.slackToken");
+    var postTo=config.get("app.find.slackURL");
 
     request.post({uri:postTo,
                   auth: {bearer:token},
@@ -52,7 +53,9 @@ function sendDialog(token, trigger_id) {
               reject('Login Invalid status code <' + res.statusCode + '>');
           }
 
-          if(!body.ok) reject(body);
+          if(body!='{\"ok\":true}') {
+            reject(body);
+          } 
 
           resolve(body);
 	  });

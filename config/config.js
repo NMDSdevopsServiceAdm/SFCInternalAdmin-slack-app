@@ -168,6 +168,16 @@ const config = convict({
         format: String,
         default: 'configure_token_here',
         env: 'FIND_SLACK_TOKEN'
+      },
+      slackURL: {
+        doc: 'The URL for Slack Dialog to post back',
+        format: String,
+        default: 'https://slack.com/api/dialog.open',
+      },
+      responseURL: {
+        doc: 'The URL for Slack Dialog to post back',
+        format: String,
+        default: 'http://localhost:3001/find',
       }
     },
     search: {
