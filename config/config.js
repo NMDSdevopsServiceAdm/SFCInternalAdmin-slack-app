@@ -164,7 +164,7 @@ const config = convict({
     },
     find: {
       verifySignature: {
-        doc: 'Weather to verify the Slack Token is signed correctly.',
+        doc: 'Whether to verify the Slack Token is signed correctly.',
         format: 'Boolean',
         default: true
       },
@@ -187,9 +187,14 @@ const config = convict({
     },
     search: {
       verifySignature: {
-        doc: 'Weather to verify the Slack Token is signed correctly.',
+        doc: 'Whether to verify the Slack Token is signed correctly.',
         format: 'Boolean',
         default: true
+      },
+      verifyJWT: {
+        doc: 'Whether to verify the JWT Token.',
+        format: 'Boolean',
+        default: false
       },
       strapiBaseURL: {
         doc: 'The base URL to STRAPI',
