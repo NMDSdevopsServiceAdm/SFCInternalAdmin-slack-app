@@ -206,7 +206,12 @@ const config = convict({
         format: String,
         default: 'configure_password_here',
         env: 'SEARCH_STRAPI_PASSWORD'
-      }
+      },
+      limit: {
+        doc: 'Max records from strapi search',
+        format: String,
+        default: '50'
+      },
     }
   }
 });
