@@ -62,7 +62,7 @@ const openDialog = async (payload, real_name) => {
 };
 
 router.route('/').post(async (req, res) => {
-  // console.log("[POST] interactions: ", req.body);
+ console.log("[POST] interactions: ", req.body);
 
   if (req.body.payload) {
     const payload = JSON.parse(req.body.payload);

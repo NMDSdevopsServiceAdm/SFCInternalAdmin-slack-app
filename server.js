@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 // const proxy = require('express-http-proxy');          // for service public/download content
 
+const querystring = require('querystring');
+
 // app config
 const AppConfig = require('./config/appConfig');
 const config = require('./config/config');
@@ -54,15 +56,19 @@ app.use('/', helmet({
     }
 }));
 
-// encodes all URL parameters
-// app.use('/', xssClean());
-// app.use('/', sanitizer());
-/*
- * end security
- */
+function getRaw(req, res, next) {
+    req.rawBody=req.body;
+    req.body=querystring.parse(req.rawBody);
+    next();
+}
 
 // for parsing of JSON from request body
 app.use(bodyParser.json());
+
+// Look out for our Slack 
+app.use(bodyParser.text({ type: 'application/x-www-form-urlencoded' }));
+app.use(getRaw);
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // this middleware add common 'no cache' headerst to the response

@@ -162,7 +162,35 @@ const config = convict({
       format: 'url',
       default: 'http://localhost:3001'
     },
+    find: {
+      verifySignature: {
+        doc: 'Weather to verify the Slack Token is signed correctly.',
+        format: 'Boolean',
+        default: true
+      },
+      slackToken: {
+        doc: 'The OAuth Token to login to Slack',
+        format: String,
+        default: 'configure_token_here',
+        env: 'FIND_SLACK_TOKEN'
+      },
+      slackURL: {
+        doc: 'The URL for Slack Dialog to post back',
+        format: String,
+        default: 'https://slack.com/api/dialog.open',
+      },
+      responseURL: {
+        doc: 'The URL for Slack Dialog to post back',
+        format: String,
+        default: 'http://localhost:3001/find',
+      }
+    },
     search: {
+      verifySignature: {
+        doc: 'Weather to verify the Slack Token is signed correctly.',
+        format: 'Boolean',
+        default: true
+      },
       strapiBaseURL: {
         doc: 'The base URL to STRAPI',
         format: 'url',
@@ -171,12 +199,13 @@ const config = convict({
       strapiUsername: {
         doc: 'The base Username to login to STRAPI',
         format: String,
-        default: 'brianenduser'
+        default: 'configure_username_here'
       },
       strapiPassword: {
         doc: 'The base Password to login to STRAPI',
         format: String,
-        default: 'password'
+        default: 'configure_password_here',
+        env: 'SEARCH_STRAPI_PASSWORD'
       }
     }
   }
