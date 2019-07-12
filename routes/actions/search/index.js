@@ -10,6 +10,7 @@ const baseURL=config.get('app.search.strapiBaseURL');
 const loginURL = baseURL+'/auth/local';
 const establishmentURL = baseURL+'/establishments';
 const userURL = baseURL+'/appusers';
+const searchLimit = config.get('app.search.limit');
 
 const dispatchers = {
   postcode: getEstablishmentData,
@@ -20,20 +21,20 @@ const dispatchers = {
 }
 
 const requestTypes = {
-  postcode: establishmentURL+'?Postcode_contains=',
+  postcode: establishmentURL+'?_limit='+searchLimit+'&Postcode_contains=',
   nmds: establishmentURL+'?NMDSID_eq=',
-  locationid: establishmentURL+'?PK_eq=',
-  name:establishmentURL+'?PK_eq=',
-  username:establishmentURL+'?PK_eq='
+  locationid: establishmentURL+'?LocationID_eq=',
+  name:establishmentURL+'?UID_eq=',
+  username:establishmentURL+'?UID_eq='
 }
 
 const requestUserTypes = {
-  name:userURL+'?FullNameValue_contains=',
-  username:userURL+'?Username_contains='
+  name:userURL+'?_limit='+searchLimit+'&Name_contains=',
+  username:userURL+'?_limit='+searchLimit+'&Username_contains='
 }
 
 const establishmentMap=function(res) {return {establishmentName: res.Name, nmdsid: res.NMDSID, postcode: res.Postcode, uid: res.UID}}
-const userMap=function(res) {return {name: res.FullNameValue, username: res.Username, establishmentId: res.EstablishmentID}}
+const userMap=function(res) {return {name: res.Name, username: res.Username, establishmentUID: res.EstablishmentUID}}
 
 router.route('/').post((req, res) => {
 
@@ -121,7 +122,7 @@ function getUserData(command, searchKey, searchValues, res, msgBuilder) {
 
           for(i=0;i<users.length;i++) {
             promises.push(
-              searchType(token,requestTypes[searchKey],searchKey,users[i].establishmentId,establishmentMap)
+              searchType(token,requestTypes[searchKey],searchKey,users[i].establishmentUID,establishmentMap)
             );
           }
 
@@ -291,11 +292,11 @@ function sendResults(responseURL, resultMsgJSON) {
 
 router.route('/combined').post((req, res) => {
 
-  //if(config.get('app.find.verifySignature')) {
-  //  if (!isVerified(req)) return res.status(401).send();
-  //} else {
-  //  console.log("WARNING - search/combined - VerifySignature disabled");
-  //}
+  if(config.get('app.find.verifySignature')) {
+    if (!isVerified(req)) return res.status(401).send();
+  } else {
+    console.log("WARNING - search/combined - VerifySignature disabled");
+  }
 
   //console.log("POST search/combined " + req.body);
 
