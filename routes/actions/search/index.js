@@ -33,8 +33,8 @@ const requestUserTypes = {
   username:userURL+'?_limit='+searchLimit+'&Username_contains='
 }
 
-const establishmentMap=function(res) {return {establishmentName: res.Name, nmdsid: res.NMDSID, postcode: res.Postcode, uid: res.UID}}
-const userMap=function(res) {return {name: res.Name, username: res.Username, establishmentUID: res.EstablishmentUID}}
+const establishmentMap=function(res) {return {establishmentName: res.Name, nmdsid: res.NMDSID, postcode: res.Postcode, uid: res.UID, URL:res.URL}}
+const userMap=function(res) {return {name: res.Name, username: res.Username, establishmentUID: res.EstablishmentUID, URL:res.URL}}
 
 router.route('/').post((req, res) => {
 
@@ -71,7 +71,7 @@ router.route('/').post((req, res) => {
 
   if (!searchValues) {
     return res.status(200).json({
-      text: `${command} - misisng search value`,
+      text: `${command} - missing search value`,
       username: 'markdownbot',
       markdwn: true,
     });
@@ -181,7 +181,7 @@ function responseFormat(command, searchKey, searchValues, results) {
         return {
           //color: 'good',
           title: `${thisResult.name? thisResult.name + ' - ' + thisResult.username + ' -' : ''}${thisResult.establishmentName}: ${thisResult.nmdsid} - ${thisResult.postcode}`,
-          text: `${config.get('app.url')}/workspace/${thisResult.uid}`,
+          text: `${thisResult.URL}`,
         }
       }),
     };
@@ -245,19 +245,7 @@ function searchType(token, queryURL, searchKey, value, responseMap) {
 
 function messageAsync(res, command, searchKey, searchValues, results, msgBuilder)
 {
-  var resultMsgJSON=JSON.stringify({
-    text: `${command} - ${searchKey} on ${searchValues} - Results (#${results.length})`,
-    username: 'markdownbot',
-    markdwn: true,
-    pretext: 'is this a match',
-    attachments: results.map(thisResult => {
-      return {
-        //color: 'good',
-        title: `${thisResult.name? thisResult.name + ' - ' + thisResult.username + ' -' : ''}${thisResult.establishmentName}: ${thisResult.nmdsid} - ${thisResult.postcode}`,
-        text: `${config.get('app.url')}/workspace/${thisResult.uid}`,
-      }
-    }),
-  });
+  var resultMsgJSON=JSON.stringify(responseFormat(command, searchKey, searchValues, results));
 
   sendResults(msgBuilder.responseURL, resultMsgJSON)
       .catch((err) => { console.log("sendResults "+err)});
