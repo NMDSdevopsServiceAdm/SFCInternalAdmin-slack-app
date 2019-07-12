@@ -58,7 +58,11 @@ app.use('/', helmet({
 
 function getRaw(req, res, next) {
     req.rawBody=req.body;
-    req.body=querystring.parse(req.rawBody);
+
+    if(req.headers['content-type']!='application/json') {
+        console.log("Map body with QueryString");
+        req.body=querystring.parse(req.rawBody);
+    }
     next();
 }
 

@@ -79,7 +79,7 @@ router.route('/').post((req, res) => {
   let results = [];
   const regex = new RegExp(searchValues, 'i');
 
-  var msgBuilder={fn: responseBuilder, async: false };
+  var msgBuilder={fn: responseSender, async: false };
 
   return dispatchers[searchKey](command, searchKey, searchValues, res, msgBuilder);
 });
@@ -158,21 +158,33 @@ function getUserData(command, searchKey, searchValues, res, msgBuilder) {
   });
 }
 
-function responseBuilder(res, command, searchKey, searchValues, results)
+function responseSender(res, command, searchKey, searchValues, results)
 {
-  return res.status(200).json({
-    text: `${command} - ${searchKey} on ${searchValues} - Results (#${results.length})`,
-    username: 'markdownbot',
-    markdwn: true,
-    pretext: 'is this a match',
-    attachments: results.map(thisResult => {
-      return {
-        //color: 'good',
-        title: `${thisResult.name? thisResult.name + ' - ' + thisResult.username + ' -' : ''}${thisResult.establishmentName}: ${thisResult.nmdsid} - ${thisResult.postcode}`,
-        text: `${config.get('app.url')}/workspace/${thisResult.uid}`,
-      }
-    }),
-  });
+  return res.status(200).json(responseFormat(command, searchKey, searchValues, results));
+}
+
+function responseResolver(res, command, searchKey, searchValues, results,msgBuilder)
+{
+  console.log("responseResolver "+command);
+  msgBuilder.resolve(responseFormat(command, searchKey, searchValues, results));
+}
+
+function responseFormat(command, searchKey, searchValues, results) {
+  var x=
+    {
+      text: `${command} - ${searchKey} on ${searchValues} - Results (#${results.length})`,
+      username: 'markdownbot',
+      markdwn: true,
+      pretext: 'is this a match',
+      attachments: results.map(thisResult => {
+        return {
+          //color: 'good',
+          title: `${thisResult.name? thisResult.name + ' - ' + thisResult.username + ' -' : ''}${thisResult.establishmentName}: ${thisResult.nmdsid} - ${thisResult.postcode}`,
+          text: `${config.get('app.url')}/workspace/${thisResult.uid}`,
+        }
+      }),
+    };
+    return x;
 }
 
 function getToken() {
@@ -277,15 +289,57 @@ function sendResults(responseURL, resultMsgJSON) {
 	});
 }
 
+router.route('/combined').post((req, res) => {
+
+  //if(config.get('app.find.verifySignature')) {
+  //  if (!isVerified(req)) return res.status(401).send();
+  //} else {
+  //  console.log("WARNING - search/combined - VerifySignature disabled");
+  //}
+
+  //console.log("POST search/combined " + req.body);
+
+  var promises=[];
+
+  addSearchPromise(promises,"postcode", req.body.postcode, res);
+  addSearchPromise(promises,"locationid", req.body.locationid, res);
+  addSearchPromise(promises,"name", req.body.name, res);
+
+  Promise.all(promises)
+    .then((resultArrys) => {
+      results=[].concat.apply([],resultArrys);
+
+      console.log("All Promises done");
+      res.status(200).json(results);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ error: `search/combined ${err}`});
+  });
+});
+
+function addSearchPromise(promises, fieldName, fieldValue, res) {
+
+  if(fieldValue!=undefined && fieldValue!=null) {
+    promises.push(new Promise((resolve, reject) => {
+
+      var msgBuilder={fn: responseResolver, async: false, resolve: resolve};
+
+      console.log("Fire "+fieldName+" Promise");
+      return dispatchers[fieldName](fieldName, fieldName, fieldValue, res, msgBuilder);
+    }));
+  }
+}
+
 router.route('/callback').post((req, res) => {
 
   if(config.get('app.find.verifySignature')) {
     if (!isVerified(req)) return res.status(401).send();
   } else {
-    console.log("WARNING - find/callback - VerifySignature disabled");
+    console.log("WARNING - search/callback - VerifySignature disabled");
   }
 
-  //console.log("POST find/callback " + req.body.payload);
+  //console.log("POST search/callback " + req.body.payload);
   req.body=JSON.parse(req.body.payload);
   console.log(req.body);
   console.log(req.body.submission);
