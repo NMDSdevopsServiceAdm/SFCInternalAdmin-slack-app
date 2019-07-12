@@ -291,11 +291,11 @@ function sendResults(responseURL, resultMsgJSON) {
 
 router.route('/combined').post((req, res) => {
 
-  //if(config.get('app.find.verifySignature')) {
-  //  if (!isVerified(req)) return res.status(401).send();
-  //} else {
-  //  console.log("WARNING - search/combined - VerifySignature disabled");
-  //}
+  if(config.get('app.find.verifySignature')) {
+    if (!isVerified(req)) return res.status(401).send();
+  } else {
+    console.log("WARNING - search/combined - VerifySignature disabled");
+  }
 
   //console.log("POST search/combined " + req.body);
 
