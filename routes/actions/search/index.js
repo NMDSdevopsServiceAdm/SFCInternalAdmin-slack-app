@@ -266,7 +266,6 @@ function messageAsync(res, command, searchKey, searchValues, results, msgBuilder
 function sendResults(responseURL, resultMsgJSON) {
   return new Promise((resolve, reject) => {
 
-    var token=config.get("app.find.slackToken");
 //    var postTo=config.get("app.find.slackURL");
 
     console.log(responseURL);
@@ -292,10 +291,10 @@ function sendResults(responseURL, resultMsgJSON) {
 
 router.route('/combined').post((req, res) => {
 
-  if(config.get('app.find.verifySignature')) {
+  if(config.get('app.search.verifyJWT')) {
     if (!isVerified(req)) return res.status(401).send();
   } else {
-    console.log("WARNING - search/combined - VerifySignature disabled");
+    console.log("WARNING - search/combined - VerifyJWT disabled");
   }
 
   //console.log("POST search/combined " + req.body);
@@ -334,7 +333,7 @@ function addSearchPromise(promises, fieldName, fieldValue, res) {
 
 router.route('/callback').post((req, res) => {
 
-  if(config.get('app.find.verifySignature')) {
+  if(config.get('app.search.verifySignature')) {
     if (!isVerified(req)) return res.status(401).send();
   } else {
     console.log("WARNING - search/callback - VerifySignature disabled");
