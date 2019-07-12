@@ -15,21 +15,8 @@ exports.ASCWDS_JWT = (ttlSeconds, username) => {
   return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlSeconds}s`});
 };
 
-
-
-// this generates the JWT that can be presented to the the ASC WDS Backend
-exports.ASCWDS_JWT = (ttlSeconds, username) => {
-  var claims = {
-    sub: username,
-    aud: config.get('jwt.aud.internalAdminApp'),
-    iss: config.get('jwt.iss')
-  };
-
-  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlSeconds}s`});
-};
-
 // middleware for confirming ASC Internal Admin JWT 
-exports.isAdmin = (req, res , next) => {
+exports.isAuthenticated = (req, res , next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
 
   if (token) {
