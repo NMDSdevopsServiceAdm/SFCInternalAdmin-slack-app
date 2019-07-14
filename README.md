@@ -12,6 +12,7 @@ All searches are case insensitive.
 ## Config
 ### ENV vars
 All mandatory:
+* `NODE_ENV` - details which of the envrionment specific config definitions (yaml) to pickup
 * `STRAPI_BASE_URL` - the base url for the STRAPI search backend
 * `TOKEN_SECRET` - this is the JWT token secret used to create ASC WDS JWT for access ASC WDS APIs and for verifying inbound requests from AWS WDS
 * `SLACK_SIGNING_SECRET` - this comes from "My Slack Apps" - `Basic Information::Signing Secret`
@@ -32,6 +33,7 @@ module.exports = {
       script: 'node',
       args: 'server',
       env: {
+        NODE_ENV: 'production',
         TOKEN_SECRET : '********',
         SLACK_SIGNING_SECRET:'paste you My Slack Apps signed secret here',
         SEARCH_STRAPI_PASSWORD:'your strapi api user's password here',

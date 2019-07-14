@@ -1,0 +1,16 @@
+aws:
+    region: eu-west-1
+    secrets:
+        use: false
+  
+jwt:
+    iss: 'sfcdev.cloudapps.digital'
+
+app:
+    url: https://sfcdev.cloudapps.digital
+    search:
+        strapiBaseURL: http://localhost:3000
+        strapiUsername: slackapiuser
+        verifySignature: true
+    find:
+        verifySignature: true
