@@ -86,7 +86,7 @@ const config = convict({
       secret: {
         doc: 'The JWT signing secret',
         format: '*',
-        env: 'Token_Secret'
+        env: 'TOKEN_SECRET'
       },
       ttl: {
         default : {
@@ -179,11 +179,6 @@ const config = convict({
         format: String,
         default: 'https://slack.com/api/dialog.open',
       },
-      responseURL: {
-        doc: 'The URL for Slack Dialog to post back',
-        format: String,
-        default: 'http://localhost:3001/find',
-      }
     },
     search: {
       verifySignature: {
@@ -199,7 +194,8 @@ const config = convict({
       strapiBaseURL: {
         doc: 'The base URL to STRAPI',
         format: 'url',
-        default: 'http://localhost:1337'
+        default: 'http://localhost:1337',
+        env: 'STRAPI_BASE_URL'
       },
       strapiUsername: {
         doc: 'The base Username to login to STRAPI',

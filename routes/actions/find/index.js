@@ -5,8 +5,6 @@ const config = require('../../../config/config');
 
 const isVerified = require('../../../utils/verifySignature').isVerified;
 
-const search = require('../search');
-
 router.route('/').post((req, res) => {
   if(config.get('app.find.verifySignature')) {
     if (!isVerified(req)) return res.status(401).send();
@@ -14,20 +12,20 @@ router.route('/').post((req, res) => {
     console.log("WARNING - find - VerifySignature disabled");
   }
 
-//  console.log("[POST] actions/find: ", req.body);
+  //console.log("[POST] actions/find: ", req.body);
 
-  sendDialog(req.body.token,req.body.trigger_id)
+  sendDialog(req.body.trigger_id)
     .then(() => {
       return res.status(200).json({ message:'Launching ASC Finder'});
     })
     .catch((err) => {
-      console.log(err);
-      res.status(200).json({ error: `Failed to launch ASC Finder ${err}`});
+      console.log('actions/find error:', err);
+      res.status(200).json({ error: `Failed to launch ASC Finder`});
     });
 
 });
 
-function sendDialog(token, trigger_id) {
+function sendDialog(trigger_id) {
   return new Promise((resolve, reject) => {
 
     var dialogDataJSON=JSON.stringify({

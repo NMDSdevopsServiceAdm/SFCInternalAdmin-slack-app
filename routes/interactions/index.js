@@ -73,22 +73,25 @@ router.route('/').post(async (req, res) => {
 
     // console.log("WA DEBUG - payload: ", payload)
 
-    const originalEstablishment = payload.original_message.attachments[0];
-    const originalEstablishmentName = originalEstablishment.title;
-    const originalEstablishmentFields = originalEstablishment.fields;
-    const originalEstablishmentUIDField = originalEstablishmentFields.find(thisField => thisField.title === 'UID');
-    const originalEstablishmentNMDSField = originalEstablishmentFields.find(thisField => thisField.title === 'NMDS ID');
-    const originalEstablishmentPostcodeField = originalEstablishmentFields.find(thisField => thisField.title === 'Postcode');
-    const establishmentUID = originalEstablishmentUIDField ? originalEstablishmentUIDField.value : null;
-
-    if (!establishmentUID) {
-      // failed to extract the establishment UID
-      return res.status(400).send('Failed to identifiy establishment UID from Slack request');
-    }
-  
     const callbackID = payload.callback_id;
+    console.log("CallbackID - ", callbackID);
+
     switch (callbackID) {
+      // on accepting or rejecting a registration
       case "registration":
+        const originalEstablishment = payload.original_message.attachments[0];
+        const originalEstablishmentName = originalEstablishment.title;
+        const originalEstablishmentFields = originalEstablishment.fields;
+        const originalEstablishmentUIDField = originalEstablishmentFields.find(thisField => thisField.title === 'UID');
+        const originalEstablishmentNMDSField = originalEstablishmentFields.find(thisField => thisField.title === 'NMDS ID');
+        const originalEstablishmentPostcodeField = originalEstablishmentFields.find(thisField => thisField.title === 'Postcode');
+        const establishmentUID = originalEstablishmentUIDField ? originalEstablishmentUIDField.value : null;
+    
+        if (!establishmentUID) {
+          // failed to extract the establishment UID
+          return res.status(400).send('Failed to identifiy establishment UID from Slack request');
+        }
+      
         const processedRegistration = await registrationApproval(establishmentUID, payload);
         if (processedRegistration === null) {
           return res.status(500).send();
@@ -168,6 +171,10 @@ router.route('/').post(async (req, res) => {
             ]
           });
         }
+        break;
+      
+      // on having entered information in the find (search) dialog
+      case "find-callbackid":
         break;
     }
   

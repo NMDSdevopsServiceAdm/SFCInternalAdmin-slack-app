@@ -116,7 +116,14 @@ app.use('/',rootEndpoint);
 const startApp = () => {
     const listenPort = parseInt(config.get('listen.port'), 10);
     app.set('port', listenPort);
-    app.listen(app.get('port'));
+
+    if (config.get('listen.ip') && config.get('listen.ip').length > 0) {
+        // binds to a specific network interface
+        app.listen(app.get('port'), config.get('listen.ip'));
+    } else {
+        // default is to bind to all network interfaces
+        app.listen(app.get('port'));
+    }
     console.log('Listening on port: ' + app.get('port'));
 };
 
