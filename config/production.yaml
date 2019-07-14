@@ -1,6 +1,6 @@
 listen:
   port: 3001
-  ip: 172.16.0.1
+  ip: 172.18.0.1
 
 aws:
     region: eu-west-1
