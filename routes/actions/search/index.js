@@ -91,29 +91,6 @@ function addSearchPromise(promises, fieldName, fieldValue, res) {
     }));
   }
 }
-
-router.route('/callback').post((req, res) => {
-
-  if(config.get('app.search.verifySignature')) {
-    if (!isVerified(req)) return res.status(401).send();
-  } else {
-    console.log("WARNING - search/callback - VerifySignature disabled");
-  }
-
-  //console.log("POST search/callback " + req.body.payload);
-  const payload = JSON.parse(req.body.payload);
-  console.log(payload);
-  console.log(payload.submission);
-
-  const msgBuilder={fn: messageAsync, async: true, responseURL: payload.response_url};
-  dispatchers[payload.submission.command](payload.submission.command, 
-                                          payload.submission.command,
-                                          payload.submission.value,
-                                          res,
-                                          msgBuilder);
-
-  res.status(200).json();
-});
 */
 
 module.exports = router;
