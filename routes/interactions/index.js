@@ -5,9 +5,10 @@ const config = require('../../config/config');
 const registrationApproval = require('../../utils/registrationApprovals');
 
 const router = express.Router();
+const isVerified = require('../../utils/verifySignature').isVerified;
 
+/*
 const apiUrl = 'https://slack.com/api';
-
 // open the dialog by calling dialogs.open method and sending the payload
 const openDialog = async (payload, real_name) => {
   const dialogData = {
@@ -59,7 +60,7 @@ const openDialog = async (payload, real_name) => {
 
     return false;
   }
-};
+}; */
 
 router.route('/').post(async (req, res) => {
   if(config.get('app.search.verifySignature')) {
