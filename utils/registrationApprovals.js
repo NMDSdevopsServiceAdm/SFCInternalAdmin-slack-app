@@ -72,7 +72,7 @@ const approveReject = async (establishmentUID, request) => {
   }
 };
 
-const processApproveReject = async (paylaod, res) => {
+const processApproveReject = async (payload, res) => {
   const originalEstablishment = payload.original_message.attachments[0];
   const originalEstablishmentName = originalEstablishment.title;
   const originalEstablishmentFields = originalEstablishment.fields;
@@ -86,7 +86,7 @@ const processApproveReject = async (paylaod, res) => {
     return res.status(400).send('Failed to identifiy establishment UID from Slack request');
   }
 
-  const processedRegistration = await registrationApproval(establishmentUID, payload);
+  const processedRegistration = await approveReject(establishmentUID, payload);
   if (processedRegistration === null) {
     return res.status(500).send();
 
