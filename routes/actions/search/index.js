@@ -24,8 +24,8 @@ const requestTypes = {
   postcode: establishmentURL+'?_limit='+searchLimit+'&Postcode_contains=',
   nmds: establishmentURL+'?NMDSID_eq=',
   locationid: establishmentURL+'?LocationID_eq=',
-  // name:establishmentURL+'?UID_eq=',
-  // username:establishmentURL+'?UID_eq='
+  name:establishmentURL+'?UID_eq=',
+  username:establishmentURL+'?UID_eq='
 }
 
 const requestUserTypes = {
