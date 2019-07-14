@@ -1,6 +1,6 @@
 const config = require('../../config/config');
 const jwt = require('jsonwebtoken');
-const Token_Secret = process.env.Token_Secret;
+const Token_Secret = process.env.TOKEN_SECRET;
 
 const THIS_ISS = config.get('jwt.iss');
 
