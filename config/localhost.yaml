@@ -2,18 +2,15 @@ aws:
     region: eu-west-1
     secrets:
         use: false
-        wallet: dev/api
   
 jwt:
-    iss: 'localhost'
-    ttl:
-        login: 60
+    iss: 'sfcdev.cloudapps.digital'
 
 app:
     url: https://sfcdev.cloudapps.digital
     search:
-        strapiBaseURL: http://localhost:1337
-        strapiUsername: brianenduser
-        verifySignature: false
+        strapiBaseURL: http://localhost:3000
+        strapiUsername: slackapiuser
+        verifySignature: true
     find:
         responseURL: http://ec2-34-255-118-188.eu-west-1.compute.amazonaws.com:3001/actions/search
