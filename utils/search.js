@@ -1,4 +1,5 @@
 const request = require('request');
+const config = require('../config/config');
 
 // Local constants
 const baseURL=config.get('app.search.strapiBaseURL');
@@ -221,9 +222,17 @@ function sendResults(responseURL, resultMsgJSON) {
 	});
 }
 
+// returms true if dispatcher for the given search key found - otherwise false
+const isDispatcher = (searchKey) => {
+  return dispatchers[searchKey] === undefined ? true : false;
+};
+
+// perform search on a single search key
 const singleSearch = (command, searchKey, searchValues, res) => {
   const msgBuilder={fn: responseSender, async: false };
   return dispatchers[searchKey](command, searchKey, searchValues, res, msgBuilder);
 };
 
 module.exports.singleSearch = singleSearch;
+module.exports.isDispatcher = isDispatcher;
+

@@ -16,6 +16,6 @@ app:
         strapiBaseURL: http://localhost:3000
         strapiUsername: slackapiuser
         verifySignature: true
-        limit: 50
+        limit: "50"
     find:
         verifySignature: true
