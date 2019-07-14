@@ -233,6 +233,18 @@ const singleSearch = (command, searchKey, searchValues, res) => {
   return dispatchers[searchKey](command, searchKey, searchValues, res, msgBuilder);
 };
 
+const findSearch = (payload, res) => {
+  const msgBuilder={fn: messageAsync, async: true, responseURL: payload.response_url};
+  dispatchers[payload.submission.command](payload.submission.command, 
+                                          payload.submission.command,
+                                          payload.submission.value,
+                                          res,
+                                          msgBuilder);
+
+  res.status(200).json();
+};
+
 module.exports.singleSearch = singleSearch;
 module.exports.isDispatcher = isDispatcher;
+module.exports.interactiveFind = findSearch;
 
