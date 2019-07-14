@@ -62,70 +62,76 @@ const openDialog = async (payload, real_name) => {
 };
 
 router.route('/').post(async (req, res) => {
- console.log("[POST] interactions: ", req.body);
+  if(config.get('app.search.verifySignature')) {
+    if (!isVerified(req)) return res.status(401).send();
+  } else {
+    console.log("WARNING - search - VerifySignature disabled");
+  }
 
   if (req.body.payload) {
     const payload = JSON.parse(req.body.payload);
 
-    console.log("WA DEBUG - payload: ", payload)
+    // console.log("WA DEBUG - payload: ", payload)
 
-    const callbackID = payload.callback_id;
-    console.log("WA DEBUG - interactions: callback id", callbackID)
+    const originalEstablishment = payload.original_message.attachments[0];
+    const originalEstablishmentName = originalEstablishment.title;
+    const originalEstablishmentFields = originalEstablishment.fields;
+    const originalEstablishmentUIDField = originalEstablishmentFields.find(thisField => thisField.title === 'UID');
+    const originalEstablishmentNMDSField = originalEstablishmentFields.find(thisField => thisField.title === 'NMDS ID');
+    const originalEstablishmentPostcodeField = originalEstablishmentFields.find(thisField => thisField.title === 'Postcode');
+    const establishmentUID = originalEstablishmentUIDField ? originalEstablishmentUIDField.value : null;
+
+    if (!establishmentUID) {
+      // failed to extract the establishment UID
+      return res.status(400).send('Failed to identifiy establishment UID from Slack request');
+    }
   
+    const callbackID = payload.callback_id;
     switch (callbackID) {
       case "registration":
-        const processedRegistration = await registrationApproval(payload);
+        const processedRegistration = await registrationApproval(establishmentUID, payload);
         if (processedRegistration === null) {
           return res.status(500).send();
 
         } else if (processedRegistration) {
-          console.log("WA DEBUG - approved")
           return res.status(200).json(
             {
               username: 'markdownbot',
               markdwn: true,
               response_type: 'in_channel',
-              replace_original: false,
+              replace_original: true,
               delete_original: false,
               attachments: [
                 {
                   color: "success",
                   pretext: "Approved Registration",
-                  title: "The best establishment to have ever been created",
-                  title_link: "https://sfcdev.cloudapps.ditigal/workplace/7r537t584748",
+                  title: originalEstablishmentName,
+                  title_link: `https://sfcdev.cloudapps.digitial/workplace/${establishmentUID}`,
                   text: `Approved by ${payload.user.name}`,
                   fields: [
                       {
+                        "title": "UID",
+                        "value": establishmentUID,
+                        "short": false
+                      },
+                      {
                           "title": "NMDS ID",
-                          "value": "A475786",
+                          "value": originalEstablishmentNMDSField ? originalEstablishmentNMDSField.value : 'oops',
                           "short": true
                       },
                       {
                         "title": "Postcode",
-                        "value": "SE19 3NS",
+                        "value": originalEstablishmentPostcodeField ? originalEstablishmentPostcodeField.value : 'whoops',
                         "short": true
                       },
                   ],
-                  image_url: "https://i.ya-webdesign.com/images/approved-stamp-png-7.png",
-                  // thumb_url: "https://sfcstaging.cloudapps.digital/assets/images/logo.png",
+                  image_url: "https://asc-support.uk/images/registration_approved.png",
                   footer: "SFC ASCWDS",
-                  // footer_icon: "https://sfcstaging.cloudapps.digital/assets/images/logo.png",
-                  // ts: 123456789
                 }
               ]
             }
           );
         } else {
-          console.log("WA DEBUG - rejected")
-
-
-          // const sendDialog = await openDialog(payload, 'Warren Ayling');
-          // if (sendDialog) {
-          //   return res.status(200).send();
-          // } else {
-          //   return res.status(500).send();
-          // }
-
           return res.status(200).json({
             username: 'markdownbot',
             markdwn: true,
@@ -136,26 +142,28 @@ router.route('/').post(async (req, res) => {
               {
                 color: "danger",
                 pretext: "Rejected Registration",
-                title: "The best establishment to have ever been created",
-                title_link: "https://sfcdev.cloudapps.ditigal/workplace/7r537t584748",
+                title: originalEstablishmentName,
+                title_link: `https://sfcdev.cloudapps.digitial/workplace/${establishmentUID}`,
                 text: `Rejected by ${payload.user.name} because ${payload.actions[0].selected_options[0].value}`,
                 fields: [
-                    {
-                        "title": "NMDS ID",
-                        "value": "A475786",
-                        "short": true
-                    },
-                    {
-                      "title": "Postcode",
-                      "value": "SE19 3NS",
-                      "short": true
-                    },
+                  {
+                    "title": "UID",
+                    "value": establishmentUID,
+                    "short": false
+                  },
+                  {
+                    "title": "NMDS ID",
+                    "value": originalEstablishmentNMDSField ? originalEstablishmentNMDSField.value : 'oops',
+                    "short": true
+                  },
+                  {
+                    "title": "Postcode",
+                    "value": originalEstablishmentPostcodeField ? originalEstablishmentPostcodeField.value : 'whoops',
+                    "short": true
+                  },
                 ],
-                image_url: "http://iphone-developers.com/images/uploads/tt.png",
-                // thumb_url: "https://sfcstaging.cloudapps.digital/assets/images/logo.png",
+                image_url: "https://asc-support.uk/images/registration_rejected.png",
                 footer: "SFC ASCWDS",
-                // footer_icon: "https://sfcstaging.cloudapps.digital/assets/images/logo.png",
-                // ts: 123456789
               }
             ]
           });
