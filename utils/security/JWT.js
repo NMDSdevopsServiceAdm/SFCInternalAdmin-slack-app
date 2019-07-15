@@ -36,3 +36,14 @@ exports.isAuthenticated = (req, res , next) => {
     res.status(401).send('Requires authorisation');
   }
 };
+
+getToken = function (headers) {
+  if (headers) {
+    let token = headers;
+    if (token.startsWith('Bearer')) {
+      token = token.slice(7, token.length);
+    }
+    return token;
+  }
+  return null;
+};
