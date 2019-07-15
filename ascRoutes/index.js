@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 // prefix ASC WDS authorisation middleware on all ASC routes
-//router.use('/', isAuthenticated);
+router.use('/', isAuthenticated);
 
 // import routes
 router.use('/registrations', registrationRoutes);
