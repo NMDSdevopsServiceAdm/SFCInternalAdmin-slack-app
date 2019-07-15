@@ -40,48 +40,4 @@ router.route('/').post((req, res) => {
   return SearchUtil.singleSearch(command, searchKey, searchValues, res);
 });
 
-/*
-router.route('/combined').post((req, res) => {
-
-  if(config.get('app.search.verifyJWT')) {
-    if (!isVerified(req)) return res.status(401).send();
-  } else {
-    console.log("WARNING - search/combined - VerifyJWT disabled");
-  }
-
-  //console.log("POST search/combined " + req.body);
-
-  var promises=[];
-
-  addSearchPromise(promises,"postcode", req.body.postcode, res);
-  addSearchPromise(promises,"locationid", req.body.locationid, res);
-  addSearchPromise(promises,"name", req.body.name, res);
-
-  Promise.all(promises)
-    .then((resultArrys) => {
-      results=[].concat.apply([],resultArrys);
-
-      console.log("All Promises done");
-      res.status(200).json(results);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ error: `search/combined ${err}`});
-  });
-});
-
-function addSearchPromise(promises, fieldName, fieldValue, res) {
-
-  if(fieldValue!=undefined && fieldValue!=null) {
-    promises.push(new Promise((resolve, reject) => {
-
-      var msgBuilder={fn: responseResolver, async: false, resolve: resolve};
-
-      console.log("Fire "+fieldName+" Promise");
-      return dispatchers[fieldName](fieldName, fieldName, fieldValue, res, msgBuilder);
-    }));
-  }
-}
-*/
-
 module.exports = router;

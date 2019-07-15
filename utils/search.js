@@ -233,6 +233,14 @@ const singleSearch = (command, searchKey, searchValues, res) => {
   return dispatchers[searchKey](command, searchKey, searchValues, res, msgBuilder);
 };
 
+// perform a search on a single search key, but as part of a multi-step search
+const stepSearch = (fieldName, fieldValue, resolve, res) => {
+  const msgBuilder={fn: responseResolver, async: false, resolve: resolve};
+  console.log("Fire "+fieldName+" Promise");
+  return dispatchers[fieldName](fieldName, fieldName, fieldValue, res, msgBuilder);
+};
+
+
 const findSearch = (payload, res) => {
   const msgBuilder={fn: messageAsync, async: true, responseURL: payload.response_url};
   dispatchers[payload.submission.command](payload.submission.command, 
@@ -247,4 +255,4 @@ const findSearch = (payload, res) => {
 module.exports.singleSearch = singleSearch;
 module.exports.isDispatcher = isDispatcher;
 module.exports.interactiveFind = findSearch;
-
+module.exports.stepSearch = stepSearch;

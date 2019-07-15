@@ -15,6 +15,7 @@ const sanitizer = require('express-sanitizer');
 
 const slackRoutes = require('./slackroutes');
 const defaultRoutes = require('./routes');
+const ascRoutes = require('./ascRoutes');
 
 const app = express();
 
@@ -110,6 +111,7 @@ const interactiveRoute = (req, res, next) => {
 // open/reference endpoints
 app.use('/', defaultRoutes);
 app.use('/app', slackRoutes);
+app.use('/asc', ascRoutes);
 app.post('/', interactiveRoute);
 app.use('/',rootEndpoint);
 
