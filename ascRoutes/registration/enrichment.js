@@ -11,7 +11,7 @@ router.route('/').post((req, res) => {
   // postcode, location id and name are each optional
   req.body.postcode ? addSearchPromise(promises,"postcode", req.body.postcode, res) : true;
   req.body.locationid ? addSearchPromise(promises,"locationid", req.body.locationid, res) : true;
-  req.body.name ? addSearchPromise(promises,"name", req.body.name, res) : true;
+  req.body.name ? addSearchPromise(promises,"establishmentName", req.body.name, res) : true;
 
   Promise.all(promises)
     .then((resultArrys) => {

@@ -12,6 +12,7 @@ const dispatchers = {
   postcode: getEstablishmentData,
   nmds: getEstablishmentData,
   locationid: getEstablishmentData,
+  establishmentName: getEstablishmentData,
   name: getUserData,
   username: getUserData
 }
@@ -20,6 +21,7 @@ const requestTypes = {
   postcode: establishmentURL+'?_limit='+searchLimit+'&Postcode_contains=',
   nmds: establishmentURL+'?NMDSID_eq=',
   locationid: establishmentURL+'?LocationID_eq=',
+  establishmentName: establishmentURL+'?Name_contains=',
   name:establishmentURL+'?UID_eq=',
   username:establishmentURL+'?UID_eq='
 }
