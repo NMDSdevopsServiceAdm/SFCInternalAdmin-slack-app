@@ -46,7 +46,7 @@ function getEstablishmentData(command, searchKey, searchValues, res, msgBuilder)
         console.log(err);
         if(!msgBuilder.async) {
           console.error('getEstablishmentData searchtype error:', err);
-          res.status(500).json({ error: `Strapi getEstablishmentData`});
+          res.status(200).json({ error: `Failed - No results found`});
         }
       });
   })
@@ -54,7 +54,7 @@ function getEstablishmentData(command, searchKey, searchValues, res, msgBuilder)
     console.log(err);
     if(!msgBuilder.async) {
       console.error('getEstablishmentData login error:', err);
-      res.status(200).json({ error: `Strapi login error`});
+      res.status(200).json({ error: `Authentication failed`});
     }
   });
 }
@@ -88,7 +88,7 @@ function getUserData(command, searchKey, searchValues, res, msgBuilder) {
               console.log(err);
               if(!msgBuilder.async) {
                 console.error('getUserData searchtype establishments error:', err);
-                res.status(500).json({ error: `Strapi getUserData establishments`});
+                res.status(200).json({ error: `Failed - No results found`});
               }
             });
           } else {
@@ -99,13 +99,13 @@ function getUserData(command, searchKey, searchValues, res, msgBuilder) {
         console.log(err);
         if(!msgBuilder.async) {
           console.error('getUserData searchtype error:', err);
-          res.status(500).json({ error: `Strapi getUserData searchtype`});
+          res.status(200).json({ error: `Failed - No results found`});
         }
       });
   })
   .catch((err) => {
     console.error('getUserData login error:', err);
-    res.status(200).json({ error: `Strapi login error`});
+    res.status(200).json({ error: `Authentication failed`});
   });
 }
 
