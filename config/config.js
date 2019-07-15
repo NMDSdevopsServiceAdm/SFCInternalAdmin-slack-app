@@ -86,7 +86,7 @@ const config = convict({
       secret: {
         doc: 'The JWT signing secret',
         format: '*',
-        env: 'Token_Secret'
+        env: 'TOKEN_SECRET'
       },
       ttl: {
         default : {
@@ -102,11 +102,11 @@ const config = convict({
         }
       },
       aud: {
-        internalAdmin: {
-          doc: 'The add user JWT audience',
+        internalAdminApp: {
+          doc: 'The JWT audience for the Internal Admin application',
           format: String,
-          default: 'ADS-WDS-internal-adminr'
-        }
+          default: 'ADS-WDS-Internal-Admin-App'
+        },
       }
   },
   slack: {
@@ -164,7 +164,7 @@ const config = convict({
     },
     find: {
       verifySignature: {
-        doc: 'Weather to verify the Slack Token is signed correctly.',
+        doc: 'Whether to verify the Slack Token is signed correctly.',
         format: 'Boolean',
         default: true
       },
@@ -179,22 +179,23 @@ const config = convict({
         format: String,
         default: 'https://slack.com/api/dialog.open',
       },
-      responseURL: {
-        doc: 'The URL for Slack Dialog to post back',
-        format: String,
-        default: 'http://localhost:3001/find',
-      }
     },
     search: {
       verifySignature: {
-        doc: 'Weather to verify the Slack Token is signed correctly.',
+        doc: 'Whether to verify the Slack Token is signed correctly.',
         format: 'Boolean',
         default: true
+      },
+      verifyJWT: {
+        doc: 'Whether to verify the JWT Token.',
+        format: 'Boolean',
+        default: false
       },
       strapiBaseURL: {
         doc: 'The base URL to STRAPI',
         format: 'url',
-        default: 'http://localhost:1337'
+        default: 'http://localhost:1337',
+        env: 'STRAPI_BASE_URL'
       },
       strapiUsername: {
         doc: 'The base Username to login to STRAPI',
@@ -206,7 +207,12 @@ const config = convict({
         format: String,
         default: 'configure_password_here',
         env: 'SEARCH_STRAPI_PASSWORD'
-      }
+      },
+      limit: {
+        doc: 'Max records from strapi search',
+        format: String,
+        default: '50'
+      },
     }
   }
 });
