@@ -13,8 +13,9 @@ const helmet = require('helmet');
 const xssClean = require('xss-clean');
 const sanitizer = require('express-sanitizer');
 
-const otherRoutes = require('./routes');
-const helperRoutes = require('./routes/helper');
+const slackRoutes = require('./slackroutes');
+const defaultRoutes = require('./routes');
+const ascRoutes = require('./ascRoutes');
 
 const app = express();
 
@@ -60,7 +61,7 @@ function getRaw(req, res, next) {
     req.rawBody=req.body;
 
     if(req.headers['content-type']!='application/json') {
-        console.log("Map body with QueryString");
+        //console.log("Map body with QueryString");
         req.body=querystring.parse(req.rawBody);
     }
     next();
@@ -108,16 +109,26 @@ const interactiveRoute = (req, res, next) => {
 };
 
 // open/reference endpoints
-app.use('/',otherRoutes);
-app.use('/helper', helperRoutes);
+app.use('/', defaultRoutes);
+app.use('/app', slackRoutes);
+app.use('/asc', ascRoutes);
 app.post('/', interactiveRoute);
 app.use('/',rootEndpoint);
 
 const startApp = () => {
     const listenPort = parseInt(config.get('listen.port'), 10);
     app.set('port', listenPort);
-    app.listen(app.get('port'));
-    console.log('Listening on port: ' + app.get('port'));
+    app.set('ip', 'all interfaces');
+
+    if (config.get('listen.ip') && config.get('listen.ip').length > 0) {
+        // binds to a specific network interface
+        app.set('ip', config.get('listen.ip'));
+        app.listen(app.get('port'), config.get('listen.ip'));
+    } else {
+        // default is to bind to all network interfaces
+        app.listen(app.get('port'));
+    }
+    console.log('Listening on port: ' + app.get('port') + ' on ' + app.get('ip'));
 };
 
 if (AppConfig.ready) {

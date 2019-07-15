@@ -1,8 +1,9 @@
 const config = require('../../config/config');
 const jwt = require('jsonwebtoken');
-const Token_Secret = process.env.Token_Secret;
+const Token_Secret = process.env.TOKEN_SECRET;
 
 const THIS_ISS = config.get('jwt.iss');
+const AUTH_HEADER = 'authorization';
 
 // this generates the JWT that can be presented to the the ASC WDS Backend
 exports.ASCWDS_JWT = (ttlSeconds, username) => {
@@ -35,4 +36,15 @@ exports.isAuthenticated = (req, res , next) => {
     // not authenticated
     res.status(401).send('Requires authorisation');
   }
+};
+
+getToken = function (headers) {
+  if (headers) {
+    let token = headers;
+    if (token.startsWith('Bearer')) {
+      token = token.slice(7, token.length);
+    }
+    return token;
+  }
+  return null;
 };
