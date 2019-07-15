@@ -61,7 +61,7 @@ function getRaw(req, res, next) {
     req.rawBody=req.body;
 
     if(req.headers['content-type']!='application/json') {
-        console.log("Map body with QueryString");
+        //console.log("Map body with QueryString");
         req.body=querystring.parse(req.rawBody);
     }
     next();
