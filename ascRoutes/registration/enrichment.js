@@ -33,3 +33,5 @@ function addSearchPromise(promises, fieldName, fieldValue, res) {
     }));
   }
 }
+
+module.exports = router;
