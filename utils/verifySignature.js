@@ -19,5 +19,15 @@ const isVerified = (req) => {
   const hashCheck = timingSafeCompare(hmac.digest('hex'), hash);
   return hashCheck;
 }; 
+
+// slack verification middleware
+const slackAuthorised = (req, res, next) => {
+  if(config.get('app.search.verifySignature')) {
+    if (!isVerified(req)) return res.status(401).send();
+  } else {
+    console.log("WARNING - search - VerifySignature disabled");
+    next();
+  }
+};
   
-module.exports = { isVerified };
+module.exports = { isVerified, slackAuthorised };

@@ -6,12 +6,6 @@ const config = require('../../../config/config');
 const isVerified = require('../../../utils/verifySignature').isVerified;
 
 router.route('/').post((req, res) => {
-  if(config.get('app.find.verifySignature')) {
-    if (!isVerified(req)) return res.status(401).send();
-  } else {
-    console.log("WARNING - find - VerifySignature disabled");
-  }
-
   //console.log("[POST] actions/find: ", req.body);
 
   sendDialog(req.body.trigger_id)

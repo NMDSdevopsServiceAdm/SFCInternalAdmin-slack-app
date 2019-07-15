@@ -13,8 +13,8 @@ const helmet = require('helmet');
 const xssClean = require('xss-clean');
 const sanitizer = require('express-sanitizer');
 
-const otherRoutes = require('./routes');
-const helperRoutes = require('./routes/helper');
+const slackRoutes = require('./slackroutes');
+const defaultRoutes = require('./routes');
 
 const app = express();
 
@@ -108,8 +108,8 @@ const interactiveRoute = (req, res, next) => {
 };
 
 // open/reference endpoints
-app.use('/',otherRoutes);
-app.use('/helper', helperRoutes);
+app.use('/', defaultRoutes);
+app.use('/slack', slackRoutes);
 app.post('/', interactiveRoute);
 app.use('/',rootEndpoint);
 

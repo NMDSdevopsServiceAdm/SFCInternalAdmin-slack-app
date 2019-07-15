@@ -1,11 +1,13 @@
 const express = require('express');
+const slackAuthorised = require('./../utils/verifySignature').slackAuthorised;
+
 const router = express.Router();
 
-const statusRoute = require('./status');
 const actionRoutes =  require('./actions')
 const interactionsRoutes =  require('./interactions')
 
-router.use('/status', statusRoute);
+// prefix slack authorisation middleware on all slack routes
+router.use('/', slackAuthorised);
 router.use('/actions', actionRoutes);
 router.use('/interactions', interactionsRoutes);
 

@@ -6,13 +6,6 @@ const SearchUtil = require('../../../utils/search');
 
 
 router.route('/').post((req, res) => {
-
-  if(config.get('app.search.verifySignature')) {
-    if (!isVerified(req)) return res.status(401).send();
-  } else {
-    console.log("WARNING - search - VerifySignature disabled");
-  }
-
   //console.log("[POST] actions/search - body: ", req.body);
 
   const VALID_COMMAND = '/asc-search';

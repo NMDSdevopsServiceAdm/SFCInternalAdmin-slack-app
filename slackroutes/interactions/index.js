@@ -9,12 +9,6 @@ const router = express.Router();
 const isVerified = require('../../utils/verifySignature').isVerified;
 
 router.route('/').post(async (req, res) => {
-  if(config.get('app.search.verifySignature')) {
-    if (!isVerified(req)) return res.status(401).send();
-  } else {
-    console.log("WARNING - search - VerifySignature disabled");
-  }
-
   if (req.body.payload) {
     const payload = JSON.parse(req.body.payload);
 
