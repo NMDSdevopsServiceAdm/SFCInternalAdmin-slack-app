@@ -54,7 +54,7 @@ function getEstablishmentData(command, searchKey, searchValues, res, msgBuilder)
     console.log(err);
     if(!msgBuilder.async) {
       console.error('getEstablishmentData login error:', err);
-      res.status(500).json({ error: `Strapi getEstablishmentData`});
+      res.status(200).json({ error: `Strapi login error`});
     }
   });
 }
@@ -104,8 +104,8 @@ function getUserData(command, searchKey, searchValues, res, msgBuilder) {
       });
   })
   .catch((err) => {
-    console.error('getUserData error:', err);
-    res.status(500).json({ error: `Strapi getUserData`});
+    console.error('getUserData login error:', err);
+    res.status(200).json({ error: `Strapi login error`});
   });
 }
 
@@ -154,7 +154,7 @@ function getToken() {
                       if (res.statusCode != 200) {
                         console.log('!200 login '+loginURL);
                         reject('Login Invalid status code <' + res.statusCode + '>');
-                          return;
+                        return;
                       }
                       resolve(body.jwt);
                   }
