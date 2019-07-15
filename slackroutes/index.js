@@ -8,6 +8,7 @@ const interactionsRoutes =  require('./interactions')
 
 // prefix slack authorisation middleware on all slack routes
 router.use('/', slackAuthorised);
+
 router.use('/actions', actionRoutes);
 router.use('/interactions', interactionsRoutes);
 

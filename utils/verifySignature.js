@@ -23,7 +23,11 @@ const isVerified = (req) => {
 // slack verification middleware
 const slackAuthorised = (req, res, next) => {
   if(config.get('app.search.verifySignature')) {
-    if (!isVerified(req)) return res.status(401).send();
+    if (!isVerified(req)) {
+      return res.status(401).send();
+    } else {
+      next();
+    }
   } else {
     console.log("WARNING - search - VerifySignature disabled");
     next();
