@@ -27,7 +27,7 @@ router.route('/').post((req, res) => {
           if (thisSet.attachments && Array.isArray(thisSet.attachments)) {
             thisSet.attachments.forEach(thisAttachment => {
               const key = thisAttachment.title.replace(/\s/g, "");
-              if (!uniqueResult[key]) {
+              if (!uniqueResults[key]) {
                 uniqueResults[key] = thisAttachment;
               }
             });
@@ -38,8 +38,8 @@ router.route('/').post((req, res) => {
       res.status(200).json(Object.values(uniqueResults));
     })
     .catch((err) => {
-      console.log(err);
-      res.status(500).json({ error: `search/combined ${err}`});
+      console.error('POST asc/enrich', err);
+      res.status(500).send();
   });
 });
 
