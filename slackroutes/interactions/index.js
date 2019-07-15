@@ -1,12 +1,8 @@
-const axios = require('axios');
-const qs = require('qs');
 const express = require('express');
-const config = require('../../config/config');
 const registrationApproval = require('../../utils/registrationApprovals');
 const SearchUtil = require('../../utils/search');
 
 const router = express.Router();
-const isVerified = require('../../utils/verifySignature').isVerified;
 
 router.route('/').post(async (req, res) => {
   if (req.body.payload) {

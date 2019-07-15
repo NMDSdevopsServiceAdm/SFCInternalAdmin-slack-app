@@ -3,8 +3,6 @@ const router = express.Router();
 const request = require('request');
 const config = require('../../../config/config');
 
-const isVerified = require('../../../utils/verifySignature').isVerified;
-
 router.route('/').post((req, res) => {
   //console.log("[POST] actions/find: ", req.body);
 
