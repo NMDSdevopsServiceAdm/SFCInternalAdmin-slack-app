@@ -18,7 +18,24 @@ router.route('/').post((req, res) => {
       results=[].concat.apply([],resultArrys);
 
       console.log("POST asc/enrich - All Promises done");
-      res.status(200).json(results);
+
+      // now filter down to get a unqiue set of attachments
+      const uniqueResults = {};
+
+      if (results && Array.isArray(results)) {
+        results.forEach(thisSet => {
+          if (thisSet.attachments && Array.isArray(thisSet.attachments)) {
+            thisSet.attachments.forEach(thisAttachment => {
+              const key = thisAttachment.title.replace(/\s/g, "");
+              if (!uniqueResult[key]) {
+                uniqueResults[key] = thisAttachment;
+              }
+            });
+          }
+        });
+      }
+
+      res.status(200).json(Object.values(uniqueResults));
     })
     .catch((err) => {
       console.log(err);
