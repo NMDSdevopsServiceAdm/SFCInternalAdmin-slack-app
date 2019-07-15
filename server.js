@@ -109,7 +109,7 @@ const interactiveRoute = (req, res, next) => {
 
 // open/reference endpoints
 app.use('/', defaultRoutes);
-app.use('/slack', slackRoutes);
+app.use('/app', slackRoutes);
 app.post('/', interactiveRoute);
 app.use('/',rootEndpoint);
 
